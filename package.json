@@ -1,0 +1,44 @@
+{
+  "name": "sids-classroom",
+  "version": "1.0.0",
+  "description": "Sid's Classroom is a modern LMS designed for efficient learning and classroom management using Node.js, TypeScript, Drizzle ORM, and MySQL.",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "Saurabh Ubale",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.44.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
+    "zod": "^3.25.64"
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9.28.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "husky": "^9.1.7",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "tsx": "^4.20.2",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1749794578645,
+      "tag": "0000_loose_franklin_richards",
+      "breakpoints": true
+    }
+  ]
+}
