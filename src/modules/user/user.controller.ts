@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { sendResponse } from "@/middlewares/response.middleware";
 import { UserService } from "./user.service";
-
+import messages from "@/enums/common.enum";
+import statusCodes from "@/constants/status_codes";
 const service = new UserService();
 
 export class UserController {
@@ -15,9 +16,13 @@ export class UserController {
     sendResponse(res, 200, "User fetched", user);
   }
 
-  async create(req: Request, res: Response, next: NextFunction) {
-    const user = await service.createUser(req.body);
-    sendResponse(res, 201, "User created", user);
+  async signupUser(req:Request, res:Response, next:NextFunction){
+    try{
+      const user = await service.signupUser(req.body);
+      sendResponse(res,statusCodes.CREATED , messages.USER_SIGNUP_SUCCESS, user);
+    } catch(err){
+      next(err);
+    }
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {

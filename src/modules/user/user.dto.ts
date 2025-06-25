@@ -1,9 +1,17 @@
 import { z } from "zod";
 
-export const CreateUserDto = z.object({
-  name: z.string().min(1, "Name is required"),
+export const signupUserDto = z.object({
+  firstName: z.string().min(1, "firstName is required"),
+  lastName: z.string().min(1, "lastName is required"),
   email: z.string().min(1, "Email is required").email("Invalid email format"),
-  
+  password: z.string().min(8, "Password is required"),
+  confirm_password: z.string().min(8, "Password is required and must be at least 8 characters long"),
+  contact_number: z.string().regex(/^\d{10}$/, "Contact number must be exactly 10 digits").optional(),
+}).refine((data) => {
+  return data.password === data.confirm_password;
+}, {
+  message: "Password and confirm password do not match",
+  path: ["confirm_password"],
 });
 
-export type CreateUserInput = z.infer<typeof CreateUserDto>;
+export type CreateUserInput = z.infer<typeof signupUserDto>;

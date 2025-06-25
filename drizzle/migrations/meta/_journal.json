@@ -8,6 +8,41 @@
       "when": 1749794578645,
       "tag": "0000_loose_franklin_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1750855714660,
+      "tag": "0001_tan_marvel_zombies",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1750856365274,
+      "tag": "0002_melodic_supernaut",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1750857454639,
+      "tag": "0003_steep_invisible_woman",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1750864084637,
+      "tag": "0004_shocking_albert_cleary",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1750865371642,
+      "tag": "0005_furry_oracle",
+      "breakpoints": true
     }
   ]
 }
