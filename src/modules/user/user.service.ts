@@ -4,6 +4,7 @@ import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { signupUserInput, LoginUserInput} from "./user.types";
 import dotenv from "dotenv";
 dotenv.config();
 export class UserService {
@@ -31,23 +32,26 @@ export class UserService {
     }
     return this.userRepo.delete(id);
   }
-  async signupUser(data: { firstName: string; lastName: string; email: string; password: string; confirm_password: string; contact_number: string }) {
-      const existingUser = await this.userRepo.getByEmail(data.email);
+  async signupUser(signupData: signupUserInput) {
+      const existingUser = await this.userRepo.getByEmail(signupData.email);
       if (existingUser?.length > 0) {
         throw new CustomError(messages.USER_ALREADY_EXIST, statusCodes.CONFLICT);
       }
-      const hashedPassword = await bcrypt.hash(data.password, process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS): 10);
+      const hashedPassword = await bcrypt.hash(signupData.password, process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS): 10);
         const userData = {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
+          ...signupData,
           password: hashedPassword,
-          contact_number: data.contact_number
       };
-      return this.userRepo.createuser(userData);
+      await this.userRepo.createuser(userData);
+      return {
+        firstName: signupData.firstName,
+        lastName: signupData.lastName,
+        email: signupData.email,
+        contact_number: signupData.contact_number,
+      };
   }
 
-  async loginUser(loginData: { email: string; password: string; }) {
+  async loginUser(loginData: LoginUserInput) {
     const user = await this.userRepo.getByEmail(loginData.email);
     if (!user || user.length === 0) {
       throw new CustomError(messages.INVALID_CREDENTIALS, statusCodes.UNAUTHORIZED);
