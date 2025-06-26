@@ -3,6 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "@/utils/custom_error";
 import httpStatus from "@/constants/status_codes";
+import messages from "@/enums/common.enum";
 
 declare global {
   namespace Express {
@@ -21,7 +22,7 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
 
     if (!userRole || !allowedRoles.includes(userRole)) {
       throw new CustomError(
-        "Forbidden: You don't have access to this route",
+        messages.FORBIDDEN_ACCESS,
         httpStatus.FORBIDDEN
       );
     }

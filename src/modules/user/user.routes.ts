@@ -4,7 +4,7 @@ import { catchAsync } from "@/utils/catch_async";
 import { UserController } from "./user.controller";
 import { protect } from "@/middlewares/protect.middleware";
 import { validateRequest } from "@/middlewares/validate.middleware";
-import { signupUserDto } from "./user.dto";
+import { signupUserDto,loginUserDto } from "./user.dto";
 
 const controller = new UserController();
 const userRouter = Router();
@@ -18,6 +18,9 @@ userRouter.get(
 userRouter.get("/:id", ...protect("admin"), catchAsync(controller.getById));
 
 userRouter.post('/signup', validateRequest(signupUserDto), catchAsync(controller.signupUser));
+userRouter.post("/login", validateRequest(loginUserDto), catchAsync(controller.loginUser));
+userRouter.post("/logout", catchAsync(controller.logoutUser));
+
 userRouter.delete("/:id", ...protect("admin"), catchAsync(controller.delete));
 
 export default userRouter;

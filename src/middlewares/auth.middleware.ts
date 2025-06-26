@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "@/utils/custom_error";
 import httpStatus from "@/constants/status_codes";
-
+import messages from "@/enums/common.enum";
 export const authenticate = (
   req: Request,
   res: Response,
@@ -13,7 +13,7 @@ export const authenticate = (
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    throw new CustomError("Unauthorized", httpStatus.UNAUTHORIZED);
+    throw new CustomError(messages.ACCESS_DENIED, httpStatus.UNAUTHORIZED);
   }
 
   try {
@@ -21,6 +21,6 @@ export const authenticate = (
     req.user = decoded;
     next();
   } catch (err) {
-    throw new CustomError("Invalid token", httpStatus.UNAUTHORIZED);
+    throw new CustomError(messages.INVALID_TOKEN, httpStatus.UNAUTHORIZED);
   }
 };

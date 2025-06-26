@@ -13,6 +13,10 @@ const messages = {
     LOGIN_SUCCESS: "Login successful",
     LOGOUT_SUCCESS: "Logout successful",
     INVALID_CREDENTIALS: "Invalid credentials",
+    INVALID_TOKEN: "Invalid token",
+    WRONG_PASSWORD: "Wrong password",
+    NO_USER_LOGGED_IN: "No user is currently logged in",
+    JWT_SECRET_NOT_FOUND: "JWT secret not found",
     
     // Validation messages
     REQUIRED_FIELDS_MISSING: "Required fields are missing",
@@ -25,11 +29,15 @@ const messages = {
     SOMETHING_WENT_WRONG: "Something went wrong",
     ACCESS_DENIED: "Access denied",
     RESOURCE_NOT_FOUND: "Resource not found",
-    
+    FORBIDDEN_ACCESS: "Forbidden, you do not have permission to access this resource",
+
     // Server messages
     INTERNAL_SERVER_ERROR: "Internal server error",
     SERVICE_UNAVAILABLE: "Service unavailable",
     REQUEST_TIMEOUT: "Request timeout",
+    INVALID_REQUEST: "Invalid request",
+    UNAUTHORIZED: "Unauthorized access",
+    BAD_REQUEST: "Bad request",
   };
   
   export default messages;

@@ -25,6 +25,35 @@ export class UserController {
     }
   }
 
+  async loginUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const loggedInUser = await service.loginUser(req.body);
+      res.cookie('accessToken', loggedInUser.accessToken, {
+          httpOnly: true,        // Prevents XSS attacks
+          secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+          sameSite: 'strict',    // CSRF protection
+          maxAge: 8 * 60 * 60 * 1000 // 8 hours in milliseconds
+      });
+      sendResponse(res, statusCodes.OK, messages.LOGIN_SUCCESS, {
+          accessToken: loggedInUser.accessToken,
+          user: loggedInUser.user
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async logoutUser(req: Request, res: Response, next: NextFunction) {
+    try{
+      if (!req.cookies.accessToken) {
+        return sendResponse(res, statusCodes.UNAUTHORIZED, messages.NO_USER_LOGGED_IN);
+      }
+      res.clearCookie("accessToken");
+      sendResponse(res, statusCodes.OK, messages.LOGOUT_SUCCESS);
+    }catch(err) {
+      next(err);
+    }
+  }
   async delete(req: Request, res: Response, next: NextFunction) {
     await service.deleteUser(Number(req.params.id));
     sendResponse(res, 204, "User deleted");

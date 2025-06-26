@@ -2,7 +2,7 @@
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import { CustomError } from "@/utils/custom_error";
-
+import messages from "@/enums/common.enum";
 export const validateRequest = (schema: ZodSchema<any>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -11,7 +11,7 @@ export const validateRequest = (schema: ZodSchema<any>) => {
       next();
     } catch (err: any) {
       const message =
-        err.errors?.map((e: any) => e.message).join(", ") || "Invalid request";
+      err.errors?.map((e: any) => e.message).join(", ") || messages.INVALID_REQUEST;
       next(new CustomError(message, 400));
     }
   };
