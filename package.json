@@ -15,10 +15,12 @@
   "author": "Saurabh Ubale",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.1692.0",
     "bcrypt": "^6.0.0",
     "chalk": "^5.4.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
     "express": "^5.1.0",

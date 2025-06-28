@@ -3,17 +3,27 @@ import { sendResponse } from "@/middlewares/response.middleware";
 import { UserService } from "./user.service";
 import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
-const service = new UserService();
+import { CustomError } from "@/utils/custom_error";
+import { UserServiceType, UserControllerType } from "./user.types";
+const service: UserServiceType = new UserService();
 
-export class UserController {
+export class UserController implements UserControllerType {
   async getAll(req: Request, res: Response, next: NextFunction) {
-    const users = await service.getUsers();
-    sendResponse(res, 200, "Users fetched", users);
+    try{
+      const users = await service.getUsers();
+      sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, users);
+    }catch(err) {
+      next(err);
+    }
   }
 
   async getById(req: Request, res: Response, next: NextFunction) {
-    const user = await service.getUser(Number(req.params.id));
-    sendResponse(res, 200, "User fetched", user);
+    try{
+      const user = await service.getUser(req.params.id as unknown as number);
+      sendResponse(res, statusCodes.OK, messages.USER_FETCHED, user);
+    }catch(err) {
+      next(err);
+    }
   }
 
   async signupUser(req:Request, res:Response, next:NextFunction){
@@ -27,7 +37,7 @@ export class UserController {
 
   async loginUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const loggedInUser = await service.loginUser(req.body);
+      const loggedInUser: any = await service.loginUser(req.body);
       res.cookie('accessToken', loggedInUser.accessToken, {
           httpOnly: true,        // Prevents XSS attacks
           secure: process.env.NODE_ENV === 'production', // HTTPS only in production
@@ -54,8 +64,34 @@ export class UserController {
       next(err);
     }
   }
+
+  async forgetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await service.forgetPassword({ email: req.body.email });
+      sendResponse(res, statusCodes.OK, messages.FORGET_PASSWORD_SUCCESS,result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try{
+      const resetToken = req.query.token as string;
+      if (!resetToken) {
+        throw new CustomError(messages.INVALID_TOKEN, statusCodes.BAD_REQUEST);
+      }
+      const result = await service.resetPassword({ resetToken, new_password: req.body.new_password });
+      sendResponse(res, statusCodes.OK, messages.PASSWORD_RESET_SUCCESS,result);
+    }catch(err) {
+      next(err);
+    }
+  }
   async delete(req: Request, res: Response, next: NextFunction) {
-    await service.deleteUser(Number(req.params.id));
-    sendResponse(res, 204, "User deleted");
+    try{
+      await service.deleteUser(req.params.id as unknown as number);
+      sendResponse(res, statusCodes.OK, messages.USER_DELETED);
+    }catch(err) {
+      next(err);
+    }
   }
 }

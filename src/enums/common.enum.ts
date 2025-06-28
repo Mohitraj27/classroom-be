@@ -7,7 +7,11 @@ const messages = {
     USER_SIGNUP_SUCCESS: "User Signup Success",
     USER_DELETED: "User deleted",
     USER_ALREADY_EXIST: "User already exists",
-    
+    FORGET_PASSWORD_SUCCESS: "Password reset link sent to your email",
+    PASSWORD_RESET_SUCCESS: "Password reset successful",
+    ERROR_SENDING_EMAIL:'Failed to send Email',
+    RESET_PASSWORD_EMAIL_SUBJECT: "Reset Password Request",
+
     // Authentication related messages
     PASSWORD_MISMATCH: "Password and confirm password do not match",
     LOGIN_SUCCESS: "Login successful",

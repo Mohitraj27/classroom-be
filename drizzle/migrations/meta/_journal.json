@@ -50,6 +50,13 @@
       "when": 1750929124604,
       "tag": "0006_strong_lake",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1751014970424,
+      "tag": "0007_wild_thunderbolt_ross",
+      "breakpoints": true
     }
   ]
 }

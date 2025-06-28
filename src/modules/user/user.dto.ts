@@ -21,4 +21,21 @@ export const loginUserDto = z.object({
   password: z.string().min(8, "Password is required and must be at least 8 characters long"),
 });
 
+export const forgetPasswordDto = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email format"),
+});
+
+export const resetPasswordDto = z.object({
+  new_password: z.string().min(8, "Password is required").regex(passwordRegex, "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character (@$!%*?&)"),
+  confirm_password: z.string().min(8, "Password is required and must be at least 8 characters long"),
+}).refine((data)=>{
+  return data.new_password === data.confirm_password;
+}, {
+  message: "Password and confirm password do not match",
+  path: ["confirm_password"],
+})
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordDto>;
+export type ForgetPasswordInput = z.infer<typeof forgetPasswordDto>;
+export type LoginUserInput = z.infer<typeof loginUserDto>;
 export type CreateUserInput = z.infer<typeof signupUserDto>;

@@ -4,10 +4,13 @@ import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { signupUserInput, LoginUserInput} from "./user.types";
+import crypto from "crypto";
+import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput} from "./user.types";
+import { sendEmail } from "@/utils/emailService";
+import { hashPassword } from "@/utils/password_helper";
 import dotenv from "dotenv";
 dotenv.config();
-export class UserService {
+export class UserService implements UserServiceType {
   constructor(private readonly userRepo = new UserRepository()) {}
 
   async getUsers() {
@@ -15,11 +18,9 @@ export class UserService {
   }
 
   async getUser(id: number) {
-    const user = await this.userRepo.getById(id);
-    console.log(user);
+    const user: any = await this.userRepo.getById(id);
     if (user?.length === 0) {
-        console.log("User not found");
-      throw new CustomError("User not found", 404);
+      throw new CustomError(messages.USER_NOT_FOUND, statusCodes.NOT_FOUND);
     }
     return user;
   }
@@ -27,20 +28,22 @@ export class UserService {
 
   async deleteUser(id: number) {
     const user = await this.userRepo.getById(id);
-    if (!user) {
-      throw new CustomError("User not found", 404);
+    if (user?.length === 0) {
+      throw new CustomError(messages.USER_NOT_FOUND, statusCodes.NOT_FOUND);
     }
     return this.userRepo.delete(id);
   }
   async signupUser(signupData: signupUserInput) {
-      const existingUser = await this.userRepo.getByEmail(signupData.email);
+      const existingUser: any = await this.userRepo.getByEmail(signupData.email);
       if (existingUser?.length > 0) {
         throw new CustomError(messages.USER_ALREADY_EXIST, statusCodes.CONFLICT);
       }
-      const hashedPassword = await bcrypt.hash(signupData.password, process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS): 10);
-        const userData = {
+      const hashedPassword = await hashPassword(signupData.password);
+      const userData = {
           ...signupData,
           password: hashedPassword,
+          contact_number: signupData.contact_number,
+          resetToken: null
       };
       await this.userRepo.createuser(userData);
       return {
@@ -52,8 +55,8 @@ export class UserService {
   }
 
   async loginUser(loginData: LoginUserInput) {
-    const user = await this.userRepo.getByEmail(loginData.email);
-    if (!user || user.length === 0) {
+    const user: any = await this.userRepo.getByEmail(loginData.email);
+    if (user?.length === 0) {
       throw new CustomError(messages.INVALID_CREDENTIALS, statusCodes.UNAUTHORIZED);
     }
     const isPasswordValid = await bcrypt.compare(loginData.password, user[0].password);
@@ -72,5 +75,40 @@ export class UserService {
     const { password, ...userWithoutPassword } = user[0];
     return { accessToken, user: userWithoutPassword };
   }
+
+  async forgetPassword(forgetPasswordata: forgetPasswordInput) {
+    const user: any = await this.userRepo.getByEmail(forgetPasswordata.email);
+    if (user?.length === 0) {
+      throw new CustomError(messages.INVALID_CREDENTIALS, statusCodes.UNAUTHORIZED);
+    }
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new CustomError(messages.JWT_SECRET_NOT_FOUND, statusCodes.INTERNAL_SERVER_ERROR);
+    }
+    const resetToken: string = crypto.randomBytes(32).toString("hex");
+    await this.userRepo.setresetToken(user[0].id,  { resetToken } );
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    // TODO Email Template
+    const htmlBody = `
+        <p>Hello ${user[0].firstName || ""},</p>
+        <p>Please click on the link below to reset your password:</p>
+        <p><a href="${resetLink}">${resetLink}</a></p>
+        <br/>
+        <p>Best regards,</p>
+    `;
+     await sendEmail({
+          to: forgetPasswordata.email,
+          subject: messages.RESET_PASSWORD_EMAIL_SUBJECT,
+          html: htmlBody
+      });
+  }
+  async resetPassword(resetPasswordData: resetPasswordInput) {
+    const user: any = await this.userRepo.checkforResetToken({ resetToken: resetPasswordData.resetToken , new_password: resetPasswordData.new_password });
+    if (user?.length === 0) {
+      throw new CustomError(messages.INVALID_CREDENTIALS, statusCodes.UNAUTHORIZED);
+    }
+    const hashedPassword = await hashPassword(resetPasswordData.new_password);
+    await this.userRepo.updatePassword(user[0].id, hashedPassword );
+   }
 }
 
