@@ -3,12 +3,14 @@ import { Request, Response, NextFunction } from "express";
 
 export interface signupUserInput {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   password: string;
   confirm_password?: string;
   contact_number: string;
-  resetToken?: string | null;
+  userName: string;
+  country: string;
+  city: string;
 }
 
 export interface LoginUserInput {
@@ -32,8 +34,8 @@ export interface UserServiceType {
   getUsers: () => any;
   getUser: (id: number) => any;
   deleteUser: (id: number) => any;
-  signupUser: (signupData: signupUserInput) => Promise<{ firstName: string; lastName: string; email: string; contact_number: string;}>;
-  loginUser: (loginData: LoginUserInput) => Promise<{ accessToken: string; user: any }>;
+  signupUser: (signupData: signupUserInput) => Promise<void>;
+  loginUser: (loginData: LoginUserInput) => Promise<{ user: any }>;
   forgetPassword: (forgetData: forgetPasswordInput) => Promise<any>;
   resetPassword: (resetPasswordData: resetPasswordInput) => Promise<any>;
 }

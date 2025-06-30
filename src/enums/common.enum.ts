@@ -11,6 +11,7 @@ const messages = {
     PASSWORD_RESET_SUCCESS: "Password reset successful",
     ERROR_SENDING_EMAIL:'Failed to send Email',
     RESET_PASSWORD_EMAIL_SUBJECT: "Reset Password Request",
+    USERNAME_ALREADY_EXIST: "Username already exists",
 
     // Authentication related messages
     PASSWORD_MISMATCH: "Password and confirm password do not match",

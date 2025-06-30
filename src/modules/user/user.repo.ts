@@ -12,8 +12,7 @@ export class UserRepository {
   }
 
   async createuser(userData: signupUserInput) {
-    const data= db.insert(user).values(userData);
-    return data;
+    return db.insert(user).values(userData);
   }
   
   async getByEmail(email: string) {
@@ -30,5 +29,9 @@ export class UserRepository {
   }
   async checkforResetToken(resetTokenData: resetPasswordInput) {
     return db.select({ id: user.id, email: user.email,resetToken: user.resetToken}).from(user).where(eq(user.resetToken, resetTokenData.resetToken));
+  }
+
+  async getUserName(userName: string) {
+    return db.select().from(user).where(eq(user.userName, userName));
   }
 }

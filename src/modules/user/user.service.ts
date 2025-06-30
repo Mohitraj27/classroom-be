@@ -34,24 +34,22 @@ export class UserService implements UserServiceType {
     return this.userRepo.delete(id);
   }
   async signupUser(signupData: signupUserInput) {
-      const existingUser: any = await this.userRepo.getByEmail(signupData.email);
+      const existingUser: any[] = await this.userRepo.getByEmail(signupData.email);
       if (existingUser?.length > 0) {
         throw new CustomError(messages.USER_ALREADY_EXIST, statusCodes.CONFLICT);
+      }
+      const existingUserName: any[] = await this.userRepo.getUserName(signupData.userName);
+      if (existingUserName?.length > 0) {
+        throw new CustomError(messages.USERNAME_ALREADY_EXIST, statusCodes.CONFLICT);
       }
       const hashedPassword = await hashPassword(signupData.password);
       const userData = {
           ...signupData,
+          lastName: signupData?.lastName || "",
           password: hashedPassword,
-          contact_number: signupData.contact_number,
           resetToken: null
       };
       await this.userRepo.createuser(userData);
-      return {
-        firstName: signupData.firstName,
-        lastName: signupData.lastName,
-        email: signupData.email,
-        contact_number: signupData.contact_number,
-      };
   }
 
   async loginUser(loginData: LoginUserInput) {
@@ -73,7 +71,7 @@ export class UserService implements UserServiceType {
       { expiresIn: process.env.JWT_EXPIRATION || "8h" }
     );
     const { password, ...userWithoutPassword } = user[0];
-    return { accessToken, user: userWithoutPassword };
+    return { user: userWithoutPassword };
   }
 
   async forgetPassword(forgetPasswordata: forgetPasswordInput) {
@@ -111,4 +109,3 @@ export class UserService implements UserServiceType {
     await this.userRepo.updatePassword(user[0].id, hashedPassword );
    }
 }
-

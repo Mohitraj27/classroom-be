@@ -1,11 +1,15 @@
 import { mysqlTable, varchar, int } from "drizzle-orm/mysql-core";
+import { nullable } from "zod";
 
 export const user = mysqlTable("users", {
   id: int("id").primaryKey().autoincrement(),
-  firstName: varchar("firstName", { length: 100 }),
-  lastName: varchar("lastName", { length: 100 }),
+  firstName: varchar("firstName", { length: 40 }).notNull(),
+  lastName: varchar("lastName", { length: 80 }),
   email: varchar("email", { length: 320 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
-  contact_number: varchar('contact_number', { length: 10 }),
-  resetToken: varchar('resetToken', { length: 64 })
+  userName: varchar('userName', { length: 32 }).notNull().unique(),
+  password: varchar("password", { length: 60 }).notNull(),
+  contact_number: varchar('contact_number', { length: 10 }).notNull(),
+  country: varchar('country', { length: 90 }).notNull(),
+  city: varchar('city', { length: 35 }).notNull(),
+  resetToken: varchar('resetToken', { length: 64 }),
 });

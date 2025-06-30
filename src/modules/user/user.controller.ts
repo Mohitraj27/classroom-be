@@ -28,8 +28,8 @@ export class UserController implements UserControllerType {
 
   async signupUser(req:Request, res:Response, next:NextFunction){
     try{
-      const user = await service.signupUser(req.body);
-      sendResponse(res,statusCodes.CREATED , messages.USER_SIGNUP_SUCCESS, user);
+      await service.signupUser(req.body);
+      sendResponse(res,statusCodes.CREATED , messages.USER_SIGNUP_SUCCESS);
     } catch(err){
       next(err);
     }
