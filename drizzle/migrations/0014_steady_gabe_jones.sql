@@ -1,0 +1,2 @@
+ALTER TABLE `users` ADD `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL;--> statement-breakpoint
+ALTER TABLE `users` ADD `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP;
