@@ -47,7 +47,9 @@ export class UserService implements UserServiceType {
           ...signupData,
           lastName: signupData?.lastName || "",
           password: hashedPassword,
-          resetToken: null
+          resetToken: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
       };
       await this.userRepo.createuser(userData);
   }
@@ -84,7 +86,7 @@ export class UserService implements UserServiceType {
       throw new CustomError(messages.JWT_SECRET_NOT_FOUND, statusCodes.INTERNAL_SERVER_ERROR);
     }
     const resetToken: string = crypto.randomBytes(32).toString("hex");
-    await this.userRepo.setresetToken(user[0].id,  { resetToken } );
+    await this.userRepo.setresetToken(user[0].id,  { resetToken: resetToken, updatedAt: new Date() } );
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
     // TODO Email Template
     const htmlBody = `

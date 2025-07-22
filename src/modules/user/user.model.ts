@@ -1,4 +1,5 @@
-import { mysqlTable, varchar, int } from "drizzle-orm/mysql-core";
+import { sql } from "drizzle-orm";
+import { mysqlTable, varchar, int, timestamp } from "drizzle-orm/mysql-core";
 import { nullable } from "zod";
 
 export const user = mysqlTable("users", {
@@ -12,4 +13,7 @@ export const user = mysqlTable("users", {
   country: varchar('country', { length: 90 }).notNull(),
   city: varchar('city', { length: 35 }).notNull(),
   resetToken: varchar('resetToken', { length: 64 }),
+  role: varchar('role', { length: 20 }).notNull().default('learner'),
+  createdAt: timestamp("createdAt").default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp("updatedAt").default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
 });

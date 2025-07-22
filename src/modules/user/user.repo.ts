@@ -22,10 +22,10 @@ export class UserRepository {
     return db.delete(user).where(eq(user.id, id));
   }
   async setresetToken(id: number, resetToken: resetTokenType) {
-    return db.update(user).set(resetToken).where(eq(user.id, id));
+    return db.update(user).set( { resetToken: resetToken.resetToken, updatedAt: new Date() }).where(eq(user.id, id));
   }
   async updatePassword(id: number, hashedPassword: string) {
-    return db.update(user).set({ password: hashedPassword, resetToken: null }).where(eq(user.id, id));
+    return db.update(user).set({ password: hashedPassword, resetToken: null, updatedAt: new Date() }).where(eq(user.id, id));
   }
   async checkforResetToken(resetTokenData: resetPasswordInput) {
     return db.select({ id: user.id, email: user.email,resetToken: user.resetToken}).from(user).where(eq(user.resetToken, resetTokenData.resetToken));

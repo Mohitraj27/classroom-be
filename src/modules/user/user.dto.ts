@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { UserRole } from "./user.types";
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export const signupUserDto = z.object({
@@ -12,6 +12,11 @@ export const signupUserDto = z.object({
   userName: z.string().min(1, "userName is required").max(32, "userName must be at most 32 characters long"),
   country: z.string().min(1, "country is required").max(60, "country must be at most 60 characters long"),
   city: z.string().min(1, "city is required").max(50, "city must be at most 50 characters long"),
+  role: z.nativeEnum(UserRole, {
+    errorMap: () => ({ message: "Role must be one of: admin, learner, or tutor" })
+  }),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
 }).refine((data) => {
   return data.password === data.confirm_password;
 }, {

@@ -1,6 +1,11 @@
 
 import { Request, Response, NextFunction } from "express";
 
+export enum UserRole {
+  ADMIN = "admin",
+  LEARNER = "learner",
+  TUTOR = "tutor"
+}
 export interface signupUserInput {
   firstName: string;
   lastName?: string;
@@ -11,6 +16,9 @@ export interface signupUserInput {
   userName: string;
   country: string;
   city: string;
+  role: UserRole;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface LoginUserInput {
@@ -28,6 +36,7 @@ export interface resetPasswordInput {
 
 export interface resetTokenType {
   resetToken: string;
+  updatedAt: Date;
 }
 
 export interface UserServiceType {

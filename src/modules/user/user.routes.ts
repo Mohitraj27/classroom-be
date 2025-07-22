@@ -12,7 +12,7 @@ const userRouter = Router();
 
 userRouter.get(
   "/",
-  ...protect("admin", "manager"),
+  ...protect("admin", "learner","tutor"),
   catchAsync(controller.getAll)
 );
 
