@@ -5,24 +5,22 @@ import { UserController } from "./user.controller";
 import { protect } from "@/middlewares/protect.middleware";
 import { validateRequest } from "@/middlewares/validate.middleware";
 import { signupUserDto,loginUserDto, forgetPasswordDto,resetPasswordDto } from "./user.dto";
-import { UserControllerType } from "./user.types";
+import { UserControllerType,UserRole } from "./user.types";
+import { userInfo } from "os";
 
 const controller: UserControllerType = new UserController();
 const userRouter = Router();
 
-userRouter.get(
-  "/",
-  ...protect("admin", "learner","tutor"),
-  catchAsync(controller.getAll)
-);
-
-userRouter.get("/:id", ...protect("admin"), catchAsync(controller.getById));
+userRouter.get("/getAllUsers",protect(UserRole.ADMIN),catchAsync(controller.getAllUsers));
+userRouter.get("/getAllLearners",protect(UserRole.TUTOR,UserRole.ADMIN),catchAsync(controller.getAllLearners));
+userRouter.get("/getAllTutors",protect(UserRole.ADMIN,UserRole.TUTOR),catchAsync(controller.getAllTutors));
+userRouter.get("/getSingleUser/:id", protect(UserRole.ADMIN), catchAsync(controller.getById));
 
 userRouter.post('/signup', validateRequest(signupUserDto), catchAsync(controller.signupUser));
 userRouter.post("/login", validateRequest(loginUserDto), catchAsync(controller.loginUser));
 userRouter.post("/logout", catchAsync(controller.logoutUser));
 userRouter.post('/forget-password', validateRequest(forgetPasswordDto), catchAsync(controller.forgetPassword));
 userRouter.post('/reset-password', validateRequest(resetPasswordDto), catchAsync(controller.resetPassword));
-userRouter.delete("/:id", ...protect("admin"), catchAsync(controller.delete));
+userRouter.delete("/:id", protect(UserRole.ADMIN), catchAsync(controller.delete));
 
 export default userRouter;

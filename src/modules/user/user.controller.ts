@@ -8,11 +8,29 @@ import { UserServiceType, UserControllerType } from "./user.types";
 const service: UserServiceType = new UserService();
 
 export class UserController implements UserControllerType {
-  async getAll(req: Request, res: Response, next: NextFunction) {
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try{
       const users = await service.getUsers();
       sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, users);
     }catch(err) {
+      next(err);
+    }
+  }
+
+  async getAllLearners(req:Request,res:Response, next: NextFunction){
+    try{
+      const learners = await service.showLearners();
+      sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, learners);
+    }catch(err) {
+      next(err);
+    }
+  }
+
+  async getAllTutors(req:Request,res:Response,next:NextFunction){
+    try{
+      const tutors = await service.showTutors();
+      sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, tutors);
+    } catch(err){
       next(err);
     }
   }

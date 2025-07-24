@@ -47,10 +47,12 @@ export interface UserServiceType {
   loginUser: (loginData: LoginUserInput) => Promise<{ user: any }>;
   forgetPassword: (forgetData: forgetPasswordInput) => Promise<any>;
   resetPassword: (resetPasswordData: resetPasswordInput) => Promise<any>;
+  showLearners:() => any;
+  showTutors:() => any;
 }
 
 export interface UserControllerType {
-  getAll(req: Request, res: Response, next: NextFunction): Promise<any>;
+  getAllUsers(req: Request, res: Response, next: NextFunction): Promise<any>;
   getById(req: Request, res: Response, next: NextFunction): Promise<any>;
   signupUser(req: Request, res: Response, next: NextFunction): Promise<any>;
   loginUser(req: Request, res: Response, next: NextFunction): Promise<any>;
@@ -58,6 +60,8 @@ export interface UserControllerType {
   forgetPassword(req: Request, res: Response, next: NextFunction): Promise<any>;
   resetPassword(req: Request, res: Response, next: NextFunction): Promise<any>;
   delete(req: Request, res: Response, next: NextFunction): Promise<any>;
+  getAllLearners(req: Request, res: Response, next: NextFunction): Promise<any>;
+  getAllTutors(req: Request, res: Response, next: NextFunction): Promise<any>;
 }
 export interface CustomErrorType  {
   message: string;

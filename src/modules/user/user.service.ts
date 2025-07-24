@@ -17,6 +17,12 @@ export class UserService implements UserServiceType {
     return this.userRepo.getAll();
   }
 
+  async showLearners(){
+    return this.userRepo.showLearners();
+  }
+  async showTutors(){
+    return this.userRepo.showTutors();
+  }
   async getUser(id: number) {
     const user: any = await this.userRepo.getById(id);
     if (user?.length === 0) {
@@ -68,12 +74,12 @@ export class UserService implements UserServiceType {
     throw new CustomError(messages.JWT_SECRET_NOT_FOUND, statusCodes.INTERNAL_SERVER_ERROR);
     }
     const accessToken = jwt.sign(
-      { userId: user[0].id, email: user[0].email },
+      { userId: user[0].id, email: user[0].email, userName: user[0].userName,role: user[0].role },
       jwtSecret,
       { expiresIn: process.env.JWT_EXPIRATION || "8h" }
     );
     const { password, ...userWithoutPassword } = user[0];
-    return { user: userWithoutPassword };
+    return { user: userWithoutPassword, accessToken };
   }
 
   async forgetPassword(forgetPasswordata: forgetPasswordInput) {

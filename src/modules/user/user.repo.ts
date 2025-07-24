@@ -1,7 +1,7 @@
 import { db } from "@/config/db";
 import { user } from "./user.model";
 import { eq } from "drizzle-orm";
-import { resetTokenType, signupUserInput,resetPasswordInput } from "./user.types";
+import { resetTokenType, signupUserInput,resetPasswordInput,UserRole } from "./user.types";
 export class UserRepository {
   async getAll() {
     return db.select().from(user);
@@ -33,5 +33,11 @@ export class UserRepository {
 
   async getUserName(userName: string) {
     return db.select().from(user).where(eq(user.userName, userName));
+  }
+  async showLearners() {
+    return db.select().from(user).where(eq(user.role, UserRole.LEARNER));
+  }
+  async showTutors() {
+    return db.select().from(user).where(eq(user.role, UserRole.TUTOR));
   }
 }
