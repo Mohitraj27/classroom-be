@@ -13,15 +13,15 @@ dotenv.config();
 export class UserService implements UserServiceType {
   constructor(private readonly userRepo = new UserRepository()) {}
 
-  async getUsers() {
-    return this.userRepo.getAll();
+  async getUsers(page=1,limit=100) {
+    return this.userRepo.getAll(page,limit);
   }
 
-  async showLearners(){
-    return this.userRepo.showLearners();
+  async showLearners(page =1,limit=100){
+    return this.userRepo.showLearners(page,limit);
   }
-  async showTutors(){
-    return this.userRepo.showTutors();
+  async showTutors(page =1,limit=100){
+    return this.userRepo.showTutors(page,limit);
   }
   async getUser(id: number) {
     const user: any = await this.userRepo.getById(id);

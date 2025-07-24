@@ -40,15 +40,15 @@ export interface resetTokenType {
 }
 
 export interface UserServiceType {
-  getUsers: () => any;
+  getUsers: (page:number,limit:number) => any;
   getUser: (id: number) => any;
   deleteUser: (id: number) => any;
   signupUser: (signupData: signupUserInput) => Promise<void>;
   loginUser: (loginData: LoginUserInput) => Promise<{ user: any }>;
   forgetPassword: (forgetData: forgetPasswordInput) => Promise<any>;
   resetPassword: (resetPasswordData: resetPasswordInput) => Promise<any>;
-  showLearners:() => any;
-  showTutors:() => any;
+  showLearners:(page:number,limit:number) => any;
+  showTutors:(page:number,limit:number) => any;
 }
 
 export interface UserControllerType {

@@ -3,8 +3,8 @@ import { user } from "./user.model";
 import { eq } from "drizzle-orm";
 import { resetTokenType, signupUserInput,resetPasswordInput,UserRole } from "./user.types";
 export class UserRepository {
-  async getAll() {
-    return db.select().from(user);
+  async getAll(page:number,limit:number) {
+    return db.select().from(user).limit(limit).offset((page-1)*limit);
   }
 
   async getById(id: number) {
@@ -34,10 +34,10 @@ export class UserRepository {
   async getUserName(userName: string) {
     return db.select().from(user).where(eq(user.userName, userName));
   }
-  async showLearners() {
-    return db.select().from(user).where(eq(user.role, UserRole.LEARNER));
+  async showLearners(page:number,limit:number) {
+    return db.select().from(user).where(eq(user.role, UserRole.LEARNER)).limit(limit).offset((page-1)*limit);
   }
-  async showTutors() {
-    return db.select().from(user).where(eq(user.role, UserRole.TUTOR));
+  async showTutors(page:number,limit:number) {
+    return db.select().from(user).where(eq(user.role, UserRole.TUTOR)).limit(limit).offset((page-1)*limit);
   }
 }

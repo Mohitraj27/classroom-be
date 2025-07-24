@@ -10,7 +10,9 @@ const service: UserServiceType = new UserService();
 export class UserController implements UserControllerType {
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try{
-      const users = await service.getUsers();
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const users = await service.getUsers(page,limit);
       sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, users);
     }catch(err) {
       next(err);
@@ -19,7 +21,9 @@ export class UserController implements UserControllerType {
 
   async getAllLearners(req:Request,res:Response, next: NextFunction){
     try{
-      const learners = await service.showLearners();
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const learners = await service.showLearners(page,limit);
       sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, learners);
     }catch(err) {
       next(err);
@@ -28,7 +32,9 @@ export class UserController implements UserControllerType {
 
   async getAllTutors(req:Request,res:Response,next:NextFunction){
     try{
-      const tutors = await service.showTutors();
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const tutors = await service.showTutors(page,limit);
       sendResponse(res, statusCodes.OK, messages.USERS_FETCHED, tutors);
     } catch(err){
       next(err);
