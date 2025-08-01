@@ -23,6 +23,9 @@ export class UserService implements UserServiceType {
   async showTutors(page =1,limit=100){
     return this.userRepo.showTutors(page,limit);
   }
+  async showSignupRequests(page =1,limit=100){
+    return this.userRepo.showRequests(page,limit);
+  }
   async getUser(id: number) {
     const user: any = await this.userRepo.getById(id);
     if (user?.length === 0) {

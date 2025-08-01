@@ -6,6 +6,11 @@ export enum UserRole {
   LEARNER = "learner",
   TUTOR = "tutor"
 }
+export enum signupRequest{
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED"
+}
 export interface signupUserInput {
   firstName: string;
   lastName?: string;
@@ -49,6 +54,7 @@ export interface UserServiceType {
   resetPassword: (resetPasswordData: resetPasswordInput) => Promise<any>;
   showLearners:(page:number,limit:number) => any;
   showTutors:(page:number,limit:number) => any;
+  showSignupRequests:(page:number,limit:number) => any;
 }
 
 export interface UserControllerType {
@@ -62,6 +68,7 @@ export interface UserControllerType {
   delete(req: Request, res: Response, next: NextFunction): Promise<any>;
   getAllLearners(req: Request, res: Response, next: NextFunction): Promise<any>;
   getAllTutors(req: Request, res: Response, next: NextFunction): Promise<any>;
+  getAllSignupRequests(req: Request, res: Response, next: NextFunction): Promise<any>;
 }
 export interface CustomErrorType  {
   message: string;

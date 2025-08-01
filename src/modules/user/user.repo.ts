@@ -1,5 +1,5 @@
 import { db } from "@/config/db";
-import { user } from "./user.model";
+import { user, signupRequest } from "./user.model";
 import { eq } from "drizzle-orm";
 import { resetTokenType, signupUserInput,resetPasswordInput,UserRole } from "./user.types";
 export class UserRepository {
@@ -12,7 +12,7 @@ export class UserRepository {
   }
 
   async createuser(userData: signupUserInput) {
-    return db.insert(user).values(userData);
+    return db.insert(signupRequest).values(userData);
   }
   
   async getByEmail(email: string) {
@@ -39,5 +39,8 @@ export class UserRepository {
   }
   async showTutors(page:number,limit:number) {
     return db.select().from(user).where(eq(user.role, UserRole.TUTOR)).limit(limit).offset((page-1)*limit);
+  }
+  async showRequests(page:number,limit:number) {
+    return db.select().from(signupRequest).limit(limit).offset((page-1)*limit);
   }
 }

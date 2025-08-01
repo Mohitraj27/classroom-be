@@ -118,4 +118,14 @@ export class UserController implements UserControllerType {
       next(err);
     }
   }
+  async getAllSignupRequests(req:Request,res:Response,next:NextFunction){
+    try{
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const requests = await service.showSignupRequests(page,limit);
+      sendResponse(res, statusCodes.OK, messages.REQUESTS_FETCHED,requests);
+    }catch(err){
+      next(err);
+    }
+  }
 }
