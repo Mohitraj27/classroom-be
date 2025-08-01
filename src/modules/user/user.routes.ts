@@ -16,7 +16,10 @@ userRouter.get("/getAllLearners",protect(UserRole.TUTOR,UserRole.ADMIN),catchAsy
 userRouter.get("/getAllTutors",protect(UserRole.ADMIN,UserRole.TUTOR),catchAsync(controller.getAllTutors));
 userRouter.get("/getSingleUser/:id", protect(UserRole.ADMIN), catchAsync(controller.getById));
 
-userRouter.post('/signup', validateRequest(signupUserDto), catchAsync(controller.signupUser));
+userRouter.post('/signup-request', validateRequest(signupUserDto), catchAsync(controller.signupUser));
+userRouter.get('/getAllSignupRequest', protect(UserRole.ADMIN), catchAsync(controller.getAllSignupRequests));
+
+
 userRouter.post("/login", validateRequest(loginUserDto), catchAsync(controller.loginUser));
 userRouter.post("/logout", catchAsync(controller.logoutUser));
 userRouter.post('/forget-password', validateRequest(forgetPasswordDto), catchAsync(controller.forgetPassword));
