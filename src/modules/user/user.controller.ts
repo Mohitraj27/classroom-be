@@ -4,7 +4,7 @@ import { UserService } from "./user.service";
 import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import { CustomError } from "@/utils/custom_error";
-import { UserServiceType, UserControllerType } from "./user.types";
+import { UserServiceType, UserControllerType,signupRequestStatus,approveSignupRequestInput } from "./user.types";
 const service: UserServiceType = new UserService();
 
 export class UserController implements UserControllerType {
@@ -52,8 +52,8 @@ export class UserController implements UserControllerType {
 
   async signupUser(req:Request, res:Response, next:NextFunction){
     try{
-      await service.signupUser(req.body);
-      sendResponse(res,statusCodes.CREATED , messages.USER_SIGNUP_SUCCESS);
+      const result = await service.signupUser(req.body);
+      sendResponse(res,statusCodes.CREATED , messages.USER_SIGNUP_SUCCESS,result);
     } catch(err){
       next(err);
     }
@@ -63,10 +63,10 @@ export class UserController implements UserControllerType {
     try {
       const loggedInUser: any = await service.loginUser(req.body);
       res.cookie('accessToken', loggedInUser.accessToken, {
-          httpOnly: true,        // Prevents XSS attacks
+          httpOnly: true,        
           secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-          sameSite: 'strict',    // CSRF protection
-          maxAge: 8 * 60 * 60 * 1000 // 8 hours in milliseconds
+          sameSite: 'strict',   
+          maxAge: 8 * 60 * 60 * 1000 // 8 hours
       });
       sendResponse(res, statusCodes.OK, messages.LOGIN_SUCCESS, {
           accessToken: loggedInUser.accessToken,
@@ -118,4 +118,36 @@ export class UserController implements UserControllerType {
       next(err);
     }
   }
+  async getAllSignupRequests(req:Request,res:Response,next:NextFunction){
+    try{
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const requests = await service.showSignupRequests(page,limit);
+      sendResponse(res, statusCodes.OK, messages.REQUESTS_FETCHED,requests);
+    }catch(err){
+      next(err);
+    }
+  }
+  async approveSignupRequest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { role } = req.body;
+      const id = parseInt(req.query.id as string);
+      const result = await service.approveSignupRequest({ id, role });
+      sendResponse(res, statusCodes.OK, messages.REQUEST_PROCESSED, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async rejectSignupRequest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { rejectionReason } = req.body;
+      const id = parseInt(req.query.id as string);
+      const result = await service.rejectSignupRequest({id, rejectionReason});
+      sendResponse(res, statusCodes.OK, messages.REQUEST_PROCESSED, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
 }

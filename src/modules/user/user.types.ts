@@ -6,6 +6,11 @@ export enum UserRole {
   LEARNER = "learner",
   TUTOR = "tutor"
 }
+export enum signupRequestStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED"
+}
 export interface signupUserInput {
   firstName: string;
   lastName?: string;
@@ -14,6 +19,9 @@ export interface signupUserInput {
   confirm_password?: string;
   contact_number: string;
   userName: string;
+  resetToken?: string;
+  status: signupRequestStatus;
+  rejectionReason?: string;
   country: string;
   city: string;
   role: UserRole;
@@ -39,16 +47,27 @@ export interface resetTokenType {
   updatedAt: Date;
 }
 
+export interface approveSignupRequestInput {
+  id: number, 
+  role: UserRole,
+}
+export interface rejectionSignupRequestInput{
+  id: number;
+  rejectionReason: string;
+}
 export interface UserServiceType {
   getUsers: (page:number,limit:number) => any;
   getUser: (id: number) => any;
   deleteUser: (id: number) => any;
-  signupUser: (signupData: signupUserInput) => Promise<void>;
+  signupUser: (signupData: signupUserInput) => Promise<any>;
   loginUser: (loginData: LoginUserInput) => Promise<{ user: any }>;
   forgetPassword: (forgetData: forgetPasswordInput) => Promise<any>;
   resetPassword: (resetPasswordData: resetPasswordInput) => Promise<any>;
   showLearners:(page:number,limit:number) => any;
   showTutors:(page:number,limit:number) => any;
+  showSignupRequests:(page:number,limit:number) => any;
+  approveSignupRequest: (approveSignRequestInput: approveSignupRequestInput) => Promise<any>;
+  rejectSignupRequest: (rejectSignupRequest: rejectionSignupRequestInput) => Promise<any>;
 }
 
 export interface UserControllerType {
@@ -62,6 +81,9 @@ export interface UserControllerType {
   delete(req: Request, res: Response, next: NextFunction): Promise<any>;
   getAllLearners(req: Request, res: Response, next: NextFunction): Promise<any>;
   getAllTutors(req: Request, res: Response, next: NextFunction): Promise<any>;
+  getAllSignupRequests(req: Request, res: Response, next: NextFunction): Promise<any>;
+  approveSignupRequest(req: Request, res: Response, next: NextFunction): Promise<any>;
+  rejectSignupRequest(req: Request, res: Response, next: NextFunction): Promise<any>;
 }
 export interface CustomErrorType  {
   message: string;

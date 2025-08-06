@@ -43,6 +43,14 @@ const messages = {
     INVALID_REQUEST: "Invalid request",
     UNAUTHORIZED: "Unauthorized access",
     BAD_REQUEST: "Bad request",
+
+
+    REQUESTS_FETCHED : "Signup requests fetched successfully.",
+    REQUEST_APPROVED : "Signup request approved successfully.",
+    REQUEST_REJECTED : "Signup request rejected successfully.",
+    REQUEST_NOT_FOUND : "Signup request not found or already processed.",
+    REQUEST_PROCESSED: "Signup request processed successfully.",
+
   };
   
   export default messages;

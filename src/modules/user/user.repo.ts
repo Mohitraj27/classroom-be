@@ -1,7 +1,7 @@
 import { db } from "@/config/db";
-import { user } from "./user.model";
+import { user, signupRequest, historySignupRequest } from "./user.model";
 import { eq } from "drizzle-orm";
-import { resetTokenType, signupUserInput,resetPasswordInput,UserRole } from "./user.types";
+import { resetTokenType, signupUserInput,resetPasswordInput,UserRole,signupRequestStatus, rejectionSignupRequestInput } from "./user.types";
 export class UserRepository {
   async getAll(page:number,limit:number) {
     return db.select().from(user).limit(limit).offset((page-1)*limit);
@@ -12,7 +12,7 @@ export class UserRepository {
   }
 
   async createuser(userData: signupUserInput) {
-    return db.insert(user).values(userData);
+    return db.insert(signupRequest).values(userData);
   }
   
   async getByEmail(email: string) {
@@ -39,5 +39,26 @@ export class UserRepository {
   }
   async showTutors(page:number,limit:number) {
     return db.select().from(user).where(eq(user.role, UserRole.TUTOR)).limit(limit).offset((page-1)*limit);
+  }
+  async showRequests(page:number,limit:number) {
+    return db.select().from(signupRequest).limit(limit).offset((page-1)*limit);
+  }
+  async getSignupRequestById(id: number) {
+    return db.select().from(signupRequest).where(eq(signupRequest.id, id));
+  }
+  async rejectRequest(rejectsignupData: rejectionSignupRequestInput) {
+    return db.update(signupRequest).set({ status: signupRequestStatus.REJECTED, rejectionReason:rejectsignupData.rejectionReason, updatedAt: new Date() }).where(eq(signupRequest.id, rejectsignupData.id));
+  }
+  async insertUser(signupData: signupUserInput) {
+    return db.insert(user).values(signupData);
+  }
+  async approveRequest(signupData: signupUserInput) {
+    return db.insert(signupRequest).values(signupData);
+  }
+  async deleteSignupRequest(id:number){
+    return db.delete(signupRequest).where(eq(signupRequest.id, id));
+  }
+  async moveToHistory(data: any) {
+    return db.insert(historySignupRequest).values(data);
   }
 }
