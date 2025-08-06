@@ -129,11 +129,14 @@ export class UserService implements UserServiceType {
     }
 
     const approvedUser = requestedUser[0];
-
-    await this.userRepo.insertUser(approvedUser as signupUserInput);
+    const approvedUserWithRole = {
+      ...approvedUser,
+      role: approveSignRequestInput.role
+    };
+    await this.userRepo.insertUser(approvedUserWithRole as signupUserInput);
 
     await this.userRepo.moveToHistory({
-      ...approvedUser,
+      ...approvedUserWithRole,
       status: signupRequestStatus.APPROVED,
       updatedAt: new Date(),
       createdAt: approvedUser.createdAt,
