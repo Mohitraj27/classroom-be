@@ -5,7 +5,7 @@ import statusCodes from "@/constants/status_codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput} from "./user.types";
+import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput,approveSignupRequestInput,rejectionSignupRequestInput, UserRole , signupRequestStatus} from "./user.types";
 import { sendEmail } from "@/utils/emailService";
 import { hashPassword } from "@/utils/password_helper";
 import dotenv from "dotenv";
@@ -45,18 +45,19 @@ export class UserService implements UserServiceType {
   async signupUser(signupData: signupUserInput) {
       const existingUser: any[] = await this.userRepo.getByEmail(signupData.email);
       if (existingUser?.length > 0) {
-        throw new CustomError(messages.USER_ALREADY_EXIST, statusCodes.CONFLICT);
+        throw new CustomError(messages.USER_ALREADY_EXIST, statusCodes.CONFLICT, messages.USER_ALREADY_EXIST);
       }
       const existingUserName: any[] = await this.userRepo.getUserName(signupData.userName);
       if (existingUserName?.length > 0) {
-        throw new CustomError(messages.USERNAME_ALREADY_EXIST, statusCodes.CONFLICT);
+        throw new CustomError(messages.USERNAME_ALREADY_EXIST, statusCodes.CONFLICT, messages.USERNAME_ALREADY_EXIST);
       }
       const hashedPassword = await hashPassword(signupData.password);
       const userData = {
           ...signupData,
           lastName: signupData?.lastName || "",
           password: hashedPassword,
-          resetToken: null,
+          role: signupData?.role || UserRole.LEARNER,
+          status: signupRequestStatus?.PENDING,
           createdAt: new Date(),
           updatedAt: new Date()
       };
@@ -119,4 +120,48 @@ export class UserService implements UserServiceType {
     const hashedPassword = await hashPassword(resetPasswordData.new_password);
     await this.userRepo.updatePassword(user[0].id, hashedPassword );
    }
+
+  async approveSignupRequest(approveSignRequestInput: approveSignupRequestInput) {
+
+    const requestedUser = await this.userRepo.getSignupRequestById(approveSignRequestInput.id as number);
+    if (!requestedUser.length) {
+      throw new CustomError(messages.USER_NOT_FOUND, statusCodes.NOT_FOUND);
+    }
+
+    const approvedUser = requestedUser[0];
+
+    await this.userRepo.insertUser(approvedUser as signupUserInput);
+
+    await this.userRepo.moveToHistory({
+      ...approvedUser,
+      status: signupRequestStatus.APPROVED,
+      updatedAt: new Date(),
+      createdAt: approvedUser.createdAt,
+    });
+
+    await this.userRepo.deleteSignupRequest(approveSignRequestInput.id as number);
+
+    return { message: "Signup request approved and user created. Please login to continue." };
+  }
+  async rejectSignupRequest(rejectSignupRequest: rejectionSignupRequestInput) {
+    const request = await this.userRepo.getSignupRequestById(rejectSignupRequest.id as number);
+
+    if (!request.length) {
+      throw new CustomError(messages.USER_NOT_FOUND, statusCodes.NOT_FOUND);
+    }
+  
+    const signupData = request[0];
+  
+    await this.userRepo.moveToHistory({
+      ...signupData,
+      status: 'REJECTED',
+      rejectionReason: rejectSignupRequest.rejectionReason,
+      updatedAt: new Date(),
+      createdAt: signupData.createdAt,
+    });
+
+    await this.userRepo.deleteSignupRequest(rejectSignupRequest.id as number);
+  
+    return { message: "Signup request rejected." };
+  }
 }

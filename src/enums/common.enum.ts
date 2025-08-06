@@ -49,6 +49,7 @@ const messages = {
     REQUEST_APPROVED : "Signup request approved successfully.",
     REQUEST_REJECTED : "Signup request rejected successfully.",
     REQUEST_NOT_FOUND : "Signup request not found or already processed.",
+    REQUEST_PROCESSED: "Signup request processed successfully.",
 
   };
   

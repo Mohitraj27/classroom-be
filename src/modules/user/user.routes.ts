@@ -4,7 +4,7 @@ import { catchAsync } from "@/utils/catch_async";
 import { UserController } from "./user.controller";
 import { protect } from "@/middlewares/protect.middleware";
 import { validateRequest } from "@/middlewares/validate.middleware";
-import { signupUserDto,loginUserDto, forgetPasswordDto,resetPasswordDto } from "./user.dto";
+import { signupUserDto,loginUserDto, forgetPasswordDto,resetPasswordDto, approveSignupRequestDto, rejectSignupRequestDto } from "./user.dto";
 import { UserControllerType,UserRole } from "./user.types";
 import { userInfo } from "os";
 
@@ -19,6 +19,8 @@ userRouter.get("/getSingleUser/:id", protect(UserRole.ADMIN), catchAsync(control
 userRouter.post('/signup-request', validateRequest(signupUserDto), catchAsync(controller.signupUser));
 userRouter.get('/getAllSignupRequest', protect(UserRole.ADMIN), catchAsync(controller.getAllSignupRequests));
 
+userRouter.post("/approve-signupRequest",validateRequest(approveSignupRequestDto),protect(UserRole.ADMIN),catchAsync(controller.approveSignupRequest));
+userRouter.post("/reject-signupRequest",validateRequest(rejectSignupRequestDto),protect(UserRole.ADMIN),catchAsync(controller.rejectSignupRequest));
 
 userRouter.post("/login", validateRequest(loginUserDto), catchAsync(controller.loginUser));
 userRouter.post("/logout", catchAsync(controller.logoutUser));

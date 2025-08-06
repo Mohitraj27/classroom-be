@@ -41,9 +41,21 @@ export const resetPasswordDto = z.object({
 }, {
   message: "Password and confirm password do not match",
   path: ["confirm_password"],
-})
+});
+
+export const approveSignupRequestDto = z.object({
+  role: z.nativeEnum(UserRole, {
+    errorMap: () => ({ message: "Role must be one of: admin, learner, or tutor" }),
+  }),
+});
+
+export const rejectSignupRequestDto = z.object({
+  rejectionReason: z.string().min(1, "Rejection reason is required").max(180, "Rejection reason must be at most 180 characters"),
+});
 
 export type ResetPasswordInput = z.infer<typeof resetPasswordDto>;
 export type ForgetPasswordInput = z.infer<typeof forgetPasswordDto>;
 export type LoginUserInput = z.infer<typeof loginUserDto>;
 export type CreateUserInput = z.infer<typeof signupUserDto>;
+export type approvalSignupRequestInput = z.infer<typeof approveSignupRequestDto>;
+export type rejectionSignupRequestInput = z.infer<typeof rejectSignupRequestDto>;
