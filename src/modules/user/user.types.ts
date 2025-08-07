@@ -11,6 +11,11 @@ export enum signupRequestStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED"
 }
+export enum userFields {
+  role = "role",
+  userName = "userName",
+  email = "email",
+}
 export interface signupUserInput {
   firstName: string;
   lastName?: string;
@@ -68,6 +73,8 @@ export interface UserServiceType {
   showSignupRequests:(page:number,limit:number) => any;
   approveSignupRequest: (approveSignRequestInput: approveSignupRequestInput) => Promise<any>;
   rejectSignupRequest: (rejectSignupRequest: rejectionSignupRequestInput) => Promise<any>;
+  updateUserProfile: (updatedUser: number, updatedData: Partial<signupUserInput>) => Promise<any>;
+  myProfile: (loggedInUserId: any) => any;
 }
 
 export interface UserControllerType {
@@ -84,6 +91,8 @@ export interface UserControllerType {
   getAllSignupRequests(req: Request, res: Response, next: NextFunction): Promise<any>;
   approveSignupRequest(req: Request, res: Response, next: NextFunction): Promise<any>;
   rejectSignupRequest(req: Request, res: Response, next: NextFunction): Promise<any>;
+  updateUserProfile(req: Request, res: Response, next: NextFunction): Promise<any>;
+  myProfile(req: Request, res: Response, next: NextFunction): Promise<any>;
 }
 export interface CustomErrorType  {
   message: string;

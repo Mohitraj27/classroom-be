@@ -61,4 +61,7 @@ export class UserRepository {
   async moveToHistory(data: any) {
     return db.insert(historySignupRequest).values(data);
   }
+  async updateProfile(id:number, userData: Partial<signupUserInput>) {
+    return db.update(user).set({ ...userData, updatedAt: new Date() }).where(eq(user.id, id));
+  }
 }

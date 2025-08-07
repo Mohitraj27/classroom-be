@@ -5,6 +5,7 @@ import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import { CustomError } from "@/utils/custom_error";
 import { UserServiceType, UserControllerType,signupRequestStatus,approveSignupRequestInput } from "./user.types";
+import jwt from "jsonwebtoken";
 const service: UserServiceType = new UserService();
 
 export class UserController implements UserControllerType {
@@ -150,4 +151,33 @@ export class UserController implements UserControllerType {
     }
   }
 
+  async updateUserProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) {
+        throw new CustomError(messages.NO_USER_LOGGED_IN, statusCodes.UNAUTHORIZED);
+      }
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const loggedInUserId = decoded.userId; 
+      const updatedData = req.body;
+      const updatedUser = await service.updateUserProfile(loggedInUserId, updatedData);
+      sendResponse(res, statusCodes.OK, messages.USER_PROFILE_UPDATED, updatedUser);
+    } catch (err) {
+      next(err);
+    }
+  }
+  async myProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) {
+        throw new CustomError(messages.NO_USER_LOGGED_IN, statusCodes.UNAUTHORIZED);
+      }
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const loggedInUserId = decoded.userId; 
+      const user = await service.myProfile(loggedInUserId);
+      sendResponse(res, statusCodes.OK, messages.USER_PROFILE_FETCHED, user);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

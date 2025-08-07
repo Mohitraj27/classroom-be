@@ -12,6 +12,8 @@ const messages = {
     ERROR_SENDING_EMAIL:'Failed to send Email',
     RESET_PASSWORD_EMAIL_SUBJECT: "Reset Password Request",
     USERNAME_ALREADY_EXIST: "Username already exists",
+    USER_PROFILE_UPDATED: "User profile updated successfully",
+    USERNAME_EMAIL_CANNOT_BE_UPDATED: "Username, email and role cannot be updated",
 
     // Authentication related messages
     PASSWORD_MISMATCH: "Password and confirm password do not match",
@@ -50,6 +52,8 @@ const messages = {
     REQUEST_REJECTED : "Signup request rejected successfully.",
     REQUEST_NOT_FOUND : "Signup request not found or already processed.",
     REQUEST_PROCESSED: "Signup request processed successfully.",
+
+    USER_PROFILE_FETCHED: "User profile fetched successfully.",
 
   };
   

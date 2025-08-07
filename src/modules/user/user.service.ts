@@ -5,7 +5,7 @@ import statusCodes from "@/constants/status_codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput,approveSignupRequestInput,rejectionSignupRequestInput, UserRole , signupRequestStatus} from "./user.types";
+import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput,approveSignupRequestInput,rejectionSignupRequestInput, UserRole , signupRequestStatus,userFields} from "./user.types";
 import { sendEmail } from "@/utils/emailService";
 import { hashPassword } from "@/utils/password_helper";
 import dotenv from "dotenv";
@@ -157,7 +157,7 @@ export class UserService implements UserServiceType {
   
     await this.userRepo.moveToHistory({
       ...signupData,
-      status: 'REJECTED',
+      status: signupRequestStatus.REJECTED,
       rejectionReason: rejectSignupRequest.rejectionReason,
       updatedAt: new Date(),
       createdAt: signupData.createdAt,
@@ -166,5 +166,23 @@ export class UserService implements UserServiceType {
     await this.userRepo.deleteSignupRequest(rejectSignupRequest.id as number);
   
     return { message: "Signup request rejected." };
+  }
+  async updateUserProfile(updatedUser: number, updatedData: Partial<signupUserInput>) {
+     if(userFields.userName in updatedData || userFields.email in updatedData || userFields.role in updatedData) {
+      throw new CustomError(messages.USERNAME_EMAIL_CANNOT_BE_UPDATED, statusCodes.BAD_REQUEST);
+    }
+    const user = await this.userRepo.getById(updatedUser);
+    if (user?.length === 0) {
+      throw new CustomError(messages.USER_NOT_FOUND, statusCodes.NOT_FOUND);
+    }
+    const updatedUserData = await this.userRepo.updateProfile(updatedUser, updatedData);
+    if (!updatedUserData) {
+      throw new CustomError(messages.SOMETHING_WENT_WRONG, statusCodes.INTERNAL_SERVER_ERROR);
+    }
+    return { ...user[0], ...updatedData, updatedAt: new Date() };
+  }
+  async myProfile(loggedInUserId: any) {
+    const user = await this.userRepo.getById(loggedInUserId as number);
+    return { ...user[0], updatedAt: new Date() };
   }
 }

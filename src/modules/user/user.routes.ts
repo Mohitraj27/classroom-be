@@ -26,6 +26,9 @@ userRouter.post("/login", validateRequest(loginUserDto), catchAsync(controller.l
 userRouter.post("/logout", catchAsync(controller.logoutUser));
 userRouter.post('/forget-password', validateRequest(forgetPasswordDto), catchAsync(controller.forgetPassword));
 userRouter.post('/reset-password', validateRequest(resetPasswordDto), catchAsync(controller.resetPassword));
+
+userRouter.get("/viewMyProfile", catchAsync(controller.myProfile));
+userRouter.put("/update-profile",catchAsync(controller.updateUserProfile));
 userRouter.delete("/:id", protect(UserRole.ADMIN), catchAsync(controller.delete));
 
 export default userRouter;
