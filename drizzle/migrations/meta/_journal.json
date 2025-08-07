@@ -120,6 +120,13 @@
       "when": 1754482423164,
       "tag": "0016_sparkling_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1754551166079,
+      "tag": "0017_fearless_sentinels",
+      "breakpoints": true
     }
   ]
 }
