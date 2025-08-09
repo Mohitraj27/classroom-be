@@ -1,0 +1,105 @@
+import { mysqlTable, int, varchar, text, boolean, timestamp, json } from 'drizzle-orm/mysql-core';
+import { sql } from 'drizzle-orm';
+
+// === 1. Courses ===
+export const course = mysqlTable('courses', {
+  id: int('id').primaryKey().autoincrement(),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description').notNull(),
+  createdBy: int('createdBy').notNull(), // FK from users table (admin or tutor)
+  difficulty: varchar('difficulty', { length: 50 }).notNull(), // Beginner, Intermediate, Advanced
+  tags: text('tags'), // comma separated or json array
+  courseStatus: varchar('courseStatus', { length: 20 }).notNull().default('DRAFT'), // DRAFT, PUBLISHED, ARCHIVED
+  isPublished: boolean('isPublished').default(false),
+  createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
+});
+
+// === 2. Modules ===
+export const module = mysqlTable('modules', {
+  id: int('id').primaryKey().autoincrement(),
+  courseId: int('courseId').notNull(), // FK from course
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
+});
+
+// === 3. Units ===
+export const unit = mysqlTable('units', {
+  id: int('id').primaryKey().autoincrement(),
+  moduleId: int('moduleId').notNull(), // FK from module
+  title: varchar('title', { length: 255 }).notNull(),
+  contentType: varchar('contentType', { length: 20 }).notNull(), // VIDEO, PDF, PPT, QUIZ
+  createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
+});
+
+// === 4. Learning Content ===
+export const content = mysqlTable('content', {
+  id: int('id').primaryKey().autoincrement(),
+  unitId: int('unitId').notNull(), // FK from unit
+  contentUrl: varchar('contentUrl', { length: 500 }), // For video / PDF / PPT files
+  embedLink: varchar('embedLink', { length: 500 }), // For embedded videos
+  metadata: json('metadata'), // Optional extra details
+  createdBy: int('createdBy').notNull(), // FK from users (tutor/admin)
+});
+
+// === 5. Quiz ===
+export const quiz = mysqlTable('quizzes', {
+  id: int('id').primaryKey().autoincrement(),
+  unitId: int('unitId').notNull(), // FK from unit
+  title: varchar('title', { length: 255 }).notNull(),
+  totalMarks: int('totalMarks').default(0),
+  createdBy: int('createdBy').notNull(),
+});
+
+// === 6. Quiz Questions ===
+export const quizQuestion = mysqlTable('quizQuestions', {
+  id: int('id').primaryKey().autoincrement(),
+  quizId: int('quizId').notNull(), // FK from quiz
+  questionText: text('questionText').notNull(),
+  options: json('options').notNull(), // ["Option A", "Option B", "Option C"]
+  correctAnswer: varchar('correctAnswer', { length: 255 }).notNull(), // match with one of the options
+  marks: int('marks').default(1),
+});
+
+// === 7. Learner Assigned Content ===
+export const contentAssignment = mysqlTable('contentAssignment', {
+  id: int('id').primaryKey().autoincrement(),
+  contentId: int('contentId').notNull(), // FK from content
+  learnerId: int('learnerId').notNull(), // FK from users
+  assignedBy: int('assignedBy').notNull(), // tutor/admin
+  assignedAt: timestamp('assignedAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+// === 8. Learner Quiz Submissions ===
+export const quizSubmission = mysqlTable('quizSubmissions', {
+  id: int('id').primaryKey().autoincrement(),
+  quizId: int('quizId').notNull(),
+  learnerId: int('learnerId').notNull(),
+  submittedAt: timestamp('submittedAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
+  totalScore: int('totalScore').default(0),
+});
+
+// === 9. Learner Quiz Answers ===
+export const quizAnswer = mysqlTable('quizAnswers', {
+  id: int('id').primaryKey().autoincrement(),
+  submissionId: int('submissionId').notNull(),
+  questionId: int('questionId').notNull(),
+  selectedAnswer: varchar('selectedAnswer', { length: 255 }),
+  isCorrect: boolean('isCorrect').default(false),
+  marksObtained: int('marksObtained').default(0),
+});
+ 
+// === 10. Content Progress Tracking ===
+export const contentProgress = mysqlTable("contentProgress", {
+  id: int("id").primaryKey().autoincrement(),
+  learnerId: int("learnerId").notNull(),          // FK to users
+  courseId: int("courseId").notNull(),            // FK to courses
+  contentId: int("contentId").notNull(),          // FK to content/unit
+  progressPercentage: int("progressPercentage").default(0),  // 0 to 100
+  courseProgressStatus: varchar("courseProgressStatus", { length: 20 }).default("NOT_STARTED"), // NOT_STARTED, IN_PROGRESS, COMPLETED
+  lastAccessedAt: timestamp("lastAccessedAt").default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp("updatedAt").default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+});
