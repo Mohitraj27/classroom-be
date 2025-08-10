@@ -21,24 +21,16 @@ export const module = mysqlTable('modules', {
   courseId: int('courseId').notNull(), // FK from course
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
+  contentType: varchar('contentType', { length: 20 }).notNull(), 
   createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
   updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
 });
 
-// === 3. Units ===
-export const unit = mysqlTable('units', {
-  id: int('id').primaryKey().autoincrement(),
-  moduleId: int('moduleId').notNull(), // FK from module
-  title: varchar('title', { length: 255 }).notNull(),
-  contentType: varchar('contentType', { length: 20 }).notNull(), // VIDEO, PDF, PPT, QUIZ
-  createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
-  updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
-});
 
 // === 4. Learning Content ===
 export const content = mysqlTable('content', {
   id: int('id').primaryKey().autoincrement(),
-  unitId: int('unitId').notNull(), // FK from unit
+  moduleId: int('moduleId'), // FK from unit
   contentUrl: varchar('contentUrl', { length: 500 }), // For video / PDF / PPT files
   embedLink: varchar('embedLink', { length: 500 }), // For embedded videos
   metadata: json('metadata'), // Optional extra details
@@ -48,7 +40,7 @@ export const content = mysqlTable('content', {
 // === 5. Quiz ===
 export const quiz = mysqlTable('quizzes', {
   id: int('id').primaryKey().autoincrement(),
-  unitId: int('unitId').notNull(), // FK from unit
+  moduleId: int('moduleId'), // FK from unit
   title: varchar('title', { length: 255 }).notNull(),
   totalMarks: int('totalMarks').default(0),
   createdBy: int('createdBy').notNull(),
