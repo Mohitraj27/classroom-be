@@ -127,6 +127,13 @@
       "when": 1754551166079,
       "tag": "0017_fearless_sentinels",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1755327566265,
+      "tag": "0018_ordinary_mastermind",
+      "breakpoints": true
     }
   ]
 }
