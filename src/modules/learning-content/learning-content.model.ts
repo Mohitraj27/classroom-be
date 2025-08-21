@@ -1,37 +1,12 @@
 import { mysqlTable, int, varchar, text, boolean, timestamp, json } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 
-// === 1. Courses ===
-export const course = mysqlTable('courses', {
-  id: int('id').primaryKey().autoincrement(),
-  title: varchar('title', { length: 255 }).notNull(),
-  description: text('description').notNull(),
-  createdBy: int('createdBy').notNull(), // FK from users table (admin or tutor)
-  difficulty: varchar('difficulty', { length: 50 }).notNull(), // Beginner, Intermediate, Advanced
-  tags: text('tags'), // comma separated or json array
-  courseStatus: varchar('courseStatus', { length: 20 }).notNull().default('DRAFT'), // DRAFT, PUBLISHED, ARCHIVED
-  isPublished: boolean('isPublished').default(false),
-  createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
-  updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
-});
-
-// === 2. Modules ===
-export const module = mysqlTable('modules', {
-  id: int('id').primaryKey().autoincrement(),
-  courseId: int('courseId').notNull(), // FK from course
-  title: varchar('title', { length: 255 }).notNull(),
-  description: text('description'),
-  contentType: varchar('contentType', { length: 20 }).notNull(), 
-  createdAt: timestamp('createdAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
-  updatedAt: timestamp('updatedAt').default(sql`CURRENT_TIMESTAMP`).onUpdateNow().notNull(),
-});
-
-
 // === 4. Learning Content ===
 export const content = mysqlTable('content', {
   id: int('id').primaryKey().autoincrement(),
   moduleId: int('moduleId'), // FK from unit
   contentUrl: varchar('contentUrl', { length: 500 }), // For video / PDF / PPT files
+  contentType: varchar('contentType', { length: 50 }).notNull(), // video / pdf / ppt
   embedLink: varchar('embedLink', { length: 500 }), // For embedded videos
   metadata: json('metadata'), // Optional extra details
   createdBy: int('createdBy').notNull(), // FK from users (tutor/admin)

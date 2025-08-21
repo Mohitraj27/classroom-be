@@ -1,24 +1,86 @@
 import { LearningContentRepository } from "./learning-content.repo";
-import dotenv from "dotenv";
-import { CreateContentInput } from "./learning-content.dto";
+import { LearningContentServiceType } from "./learning-content.types";
+import { CreateContentInput, UpdateContentInput } from "./learning-content.dto";
 import { uploadFileToS3 } from "@/utils/aws_helper";
-dotenv.config();
-export class learningContentService implements learningContentService {
+import { CustomError } from "@/utils/custom_error";
+import statusCodes from "@/constants/status_codes";
+
+export class LearningContentService implements LearningContentServiceType {
   constructor(private readonly learningContentRepo = new LearningContentRepository()) {}
 
-  private repo = new LearningContentRepository();
-
   async createContent(input: CreateContentInput, file: Express.Multer.File, userId: number) {
-    if (!file) {
-      throw new Error("File is required");
+    try {
+      if (!file) {
+        throw new CustomError("File is required", statusCodes.BAD_REQUEST);
+      }
+      const s3Url = await uploadFileToS3(file, "contents");
+      const contentData = {
+        ...input,
+        contentUrl: s3Url,
+        createdBy: userId,
+      };
+      const result = await this.learningContentRepo.create(contentData);
+      return { statusCode: statusCodes.CREATED, message: 'Content created successfully', s3Url};
+    } catch (error) {
+      throw error;
     }
+  }
 
-    const s3Url = await uploadFileToS3(file, "contents");
+  async getContentById(id: number) {
+    try {
+      const content = await this.learningContentRepo.findById(id);
+      if (!content) {
+        throw new CustomError("Content not found", statusCodes.NOT_FOUND);
+      }
+      return content;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-    return this.repo.create({
-      ...input,
-      contentUrl: s3Url,
-      createdBy: userId,
-    });
+  async updateContent(id: number, input: UpdateContentInput) {
+    try {
+      // Check if content exists
+      const existingContent = await this.learningContentRepo.findById(id);
+      if (!existingContent) {
+        throw new CustomError("Content not found", statusCodes.NOT_FOUND);
+      }
+
+      const result = await this.learningContentRepo.update(id, input);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteContent(id: number) {
+    try {
+      // Check if content exists
+      const existingContent = await this.learningContentRepo.findById(id);
+      if (!existingContent) {
+        throw new CustomError("Content not found", statusCodes.NOT_FOUND);
+      }
+      const result = await this.learningContentRepo.delete(id);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getContentByModule(moduleId: number) {
+    try {
+      const contents = await this.learningContentRepo.findByModule(moduleId);
+      return contents;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getContentByCreatedBy(userId: number) {
+    try {
+      const contents = await this.learningContentRepo.findByCreatedBy(userId);
+      return contents;
+    } catch (error) {
+      throw error;
+    }
   }
 }
