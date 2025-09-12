@@ -19,6 +19,7 @@ const upload = multer({
   }
 });
 
+// == Content ==
 learningContentRouter.post('/create-content', protect(UserRole.ADMIN, UserRole.TUTOR), upload.single('file'), catchAsync(controller.create));
 
 learningContentRouter.get('/:id',protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getById));
@@ -30,4 +31,17 @@ learningContentRouter.delete('/delete-content/:id',protect(UserRole.ADMIN, UserR
 learningContentRouter.get('/module/:moduleId',protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getByModule));
 
 learningContentRouter.get('/getContentBytutor/:createdBy',protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getByCreatedBy));
+
+
+// == Quiz Routes ==
+learningContentRouter.post('/create-quiz', protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.createQuiz));
+
+learningContentRouter.get('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getQuizById));
+
+learningContentRouter.put('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.updateQuiz));
+
+learningContentRouter.delete('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.deleteQuiz));
+
+learningContentRouter.get('/quizzes', protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getAllQuizzes));
+
 export default learningContentRouter;

@@ -13,15 +13,25 @@ export interface LearningContentServiceType {
     deleteContent(id: number): Promise<any>;
     getContentByModule(moduleId: number): Promise<any>;
     getContentByCreatedBy(userId: number): Promise<any>;
+    createQuiz(data: any): Promise<any>;
+    getQuizById(id: number): Promise<any>;
+    updateQuiz(id: number, data: any): Promise<any>;
+    deleteQuiz(id: number): Promise<any>;
+    getAllQuizzes(): Promise<any>;
 }
 
 export interface LearningContentControllerType {
     create(req: any, res: any, next: any): Promise<any>; 
     update(req: any, res: any, next: any): Promise<any>;
     getById(req: any, res: any, next: any): Promise<any>;
-     delete(req: any, res: any, next: any): Promise<any>;
+    delete(req: any, res: any, next: any): Promise<any>;
     getByModule(req: any, res: any, next: any): Promise<any>;
     getByCreatedBy(req: any, res: any, next: any): Promise<any>;
+    createQuiz(req: any, res: any, next: any): Promise<any>;
+    getQuizById(req: any, res: any, next: any): Promise<any>;
+    updateQuiz(req: any, res: any, next: any): Promise<any>;
+    deleteQuiz(req: any, res: any, next: any): Promise<any>;
+    getAllQuizzes(req: any, res: any, next: any): Promise<any>;
 }
 
 export interface LearningContentRepositoryType{
@@ -30,4 +40,12 @@ export interface LearningContentRepositoryType{
     update(id: number, input: UpdateContentInput): Promise<any>;
     delete(id: number): Promise<any>;
     findByModule(moduleId: number): Promise<any>;
+}
+
+export interface QuizContentRepositoryType {
+    createQuiz(quizData: any, questions: any[]): Promise<any>;
+    getQuizById(id: number): Promise<any>;
+    updateQuiz(id: number, data: any, questions?: any[]): Promise<any>;
+    deleteQuiz(id: number): Promise<any>;
+    getAllQuizzes(): Promise<any>;
 }

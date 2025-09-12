@@ -1,4 +1,4 @@
-import { LearningContentRepository } from "./learning-content.repo";
+import { LearningContentRepository,QuizRepository } from "./learning-content.repo";
 import { LearningContentServiceType } from "./learning-content.types";
 import { CreateContentInput, UpdateContentInput } from "./learning-content.dto";
 import { uploadFileToS3 } from "@/utils/aws_helper";
@@ -6,7 +6,9 @@ import { CustomError } from "@/utils/custom_error";
 import statusCodes from "@/constants/status_codes";
 
 export class LearningContentService implements LearningContentServiceType {
-  constructor(private readonly learningContentRepo = new LearningContentRepository()) {}
+  constructor(
+    private readonly learningContentRepo = new LearningContentRepository(),
+    private readonly quizRepo = new QuizRepository()) {}
 
   async createContent(input: CreateContentInput, file: Express.Multer.File, userId: number) {
     try {
@@ -82,5 +84,34 @@ export class LearningContentService implements LearningContentServiceType {
     } catch (error) {
       throw error;
     }
+  }
+
+  async createQuiz(data: any) {
+    const data1 =  this.quizRepo.createQuiz(
+      {
+        moduleId: data.moduleId,
+        title: data.title,
+        totalMarks: data.totalMarks,
+        createdBy: data.createdBy,
+      },
+      data.questions
+    );
+    return data1;
+  }
+
+  async getQuizById(id: number) {
+    return this.quizRepo.getQuizById(id);
+  }
+
+  async updateQuiz(id: number, data: any) {
+    return this.quizRepo.updateQuiz(id, data, data.questions);
+  }
+
+  async deleteQuiz(id: number) {
+    return this.quizRepo.deleteQuiz(id);
+  }
+
+  async getAllQuizzes() {
+    return this.quizRepo.getAllQuizzes();
   }
 }

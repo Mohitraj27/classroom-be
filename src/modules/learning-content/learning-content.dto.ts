@@ -42,10 +42,43 @@ export const getContentCreatedByDto = z.object(
       message: "Invalid user ID",
     }),
   }
-)
+);
+
+export const createQuizDto = z.object({
+  // moduleId: z.number().min(1, "Module ID is required"),
+  title: z.string().min(1, "Title is required"),    
+  totalMarks: z.number().min(1, "Total marks is required"), 
+  createdBy: z.number().min(1, "Creator ID is required"),
+  questions: z.array(
+    z.object({
+      questionText: z.string().min(1, "Question text is required"),
+      options: z.array(z.string()).min(2, "At least two options required"),
+      correctAnswer: z.string().min(1, "Correct answer required"),
+      marks: z.number().min(1).default(1),
+    })
+  ).nonempty("Quiz must have at least one question")
+});
+
+export const updateQuizDto = z.object({
+  title: z.string().optional(),
+  totalMarks: z.number().optional(),
+  questions: z.array(
+    z.object({
+      id: z.number().optional(), // for updating existing question
+      questionText: z.string(),
+      options: z.array(z.string()),
+      correctAnswer: z.string(),
+      marks: z.number(),
+    })
+  ).optional()
+});
+
+
 export type CreateContentInput = z.infer<typeof createContentDto>;
 export type UpdateContentInput = z.infer<typeof updateContentDto>;
 export type GetContentByIdInput = z.infer<typeof getContentByIdDto>;
 export type DeleteContentInput = z.infer<typeof deleteContentDto>;
 export type GetContentByModuleInput = z.infer<typeof getContentByModuleDto>;
 export type GetContentCreatedByInput = z.infer<typeof getContentCreatedByDto>;
+export type CreateQuizInput = z.infer<typeof createQuizDto>;
+export type UpdateQuizInput = z.infer<typeof updateQuizDto>;
