@@ -32,7 +32,7 @@ export class LearningContentController implements LearningContentControllerType 
 
       const content = await service.createContent(validatedData, req.file!, userId);
 
-      sendResponse(res, statusCodes.CREATED, "Content created successfully", content);
+      sendResponse(res, statusCodes.CREATED, messages.CONTENT_CREATED, content);
     } catch (err) {
       next(err);
     }
@@ -42,7 +42,7 @@ export class LearningContentController implements LearningContentControllerType 
     try {
       const validatedParams = getContentByIdDto.parse(req.params);
       const content = await service.getContentById(validatedParams.id);
-      sendResponse(res, statusCodes.OK, "Content retrieved successfully", content);
+      sendResponse(res, statusCodes.OK, messages.CONTENT_FETCHED, content);
     } catch (err) {
       next(err);
     }
@@ -53,7 +53,7 @@ export class LearningContentController implements LearningContentControllerType 
       const validatedParams = getContentByIdDto.parse(req.params);
       const validatedData = updateContentDto.parse(req.body);
       const updatedContent = await service.updateContent(validatedParams.id, validatedData);
-      sendResponse(res, statusCodes.OK, "Content updated successfully", updatedContent);
+      sendResponse(res, statusCodes.OK, messages.CONTENT_UPDATED, updatedContent);
     } catch (err) {
       next(err);
     }
@@ -63,7 +63,7 @@ export class LearningContentController implements LearningContentControllerType 
     try {
       const validatedParams = deleteContentDto.parse(req.params);
       await service.deleteContent(Number(validatedParams.id));
-      sendResponse(res, statusCodes.OK, "Content deleted successfully");
+      sendResponse(res, statusCodes.OK, messages.CONTENT_DELETED);
     } catch (err) {
       next(err);
     }
@@ -73,7 +73,7 @@ export class LearningContentController implements LearningContentControllerType 
     try {
       const validatedParams = getContentByModuleDto.parse(req.params);
       const contents = await service.getContentByModule(validatedParams.moduleId);
-      sendResponse(res, statusCodes.OK, "Contents retrieved successfully", contents);
+      sendResponse(res, statusCodes.OK, messages.CONTENT_FETCHED, contents);
     } catch (err) {
       next(err);
     }
@@ -83,7 +83,7 @@ export class LearningContentController implements LearningContentControllerType 
     try {
       const validatedParams = getContentCreatedByDto.parse(req.params);
       const contents = await service.getContentByCreatedBy(validatedParams.createdBy);
-      sendResponse(res, statusCodes.OK, "Contents retrieved successfully", contents);
+      sendResponse(res, statusCodes.OK, messages.CONTENT_FETCHED, contents);
     } catch (err) {
       next(err);
     }
@@ -100,7 +100,7 @@ export class LearningContentController implements LearningContentControllerType 
       const body = { ...req.body, createdBy: decoded.userId };
       const validatedData = createQuizDto.parse(body);
       const quiz = await service.createQuiz(validatedData);
-      sendResponse(res, statusCodes.CREATED, "Quiz created successfully", quiz);
+      sendResponse(res, statusCodes.CREATED, messages.QUIZ_CREATED, quiz);
     } catch (err) {
       next(err);
     }
@@ -110,10 +110,10 @@ export class LearningContentController implements LearningContentControllerType 
     try {
       const quiz = await service.getQuizById(Number(req.params.id));
       if (!quiz) {
-        sendResponse(res, statusCodes.NOT_FOUND, "Quiz not found");
+        sendResponse(res, statusCodes.NOT_FOUND, messages.QUIZ_NOT_FOUND);
         return;
       }
-      sendResponse(res, statusCodes.OK, "Quiz retrieved successfully", quiz);
+      sendResponse(res, statusCodes.OK, messages.QUIZ_FETCHED, quiz);
     } catch (err) {
       next(err);
     }
@@ -123,7 +123,7 @@ export class LearningContentController implements LearningContentControllerType 
     try {
       const validatedData = updateQuizDto.parse(req.body);
       const updated = await service.updateQuiz(Number(req.params.id), validatedData);
-      sendResponse(res, statusCodes.OK, "Quiz updated successfully", updated);
+      sendResponse(res, statusCodes.OK, messages.QUIZ_UPDATED, updated);
     } catch (err) {
       next(err);
     }
@@ -132,7 +132,7 @@ export class LearningContentController implements LearningContentControllerType 
   async deleteQuiz(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       await service.deleteQuiz(Number(req.params.id));
-      sendResponse(res, statusCodes.OK, "Quiz deleted successfully");
+      sendResponse(res, statusCodes.OK, messages.QUIZ_DELETED);
     } catch (err) {
       next(err);
     }
@@ -141,7 +141,7 @@ export class LearningContentController implements LearningContentControllerType 
   async getAllQuizzes(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const quizzes = await service.getAllQuizzes();
-      sendResponse(res, statusCodes.OK, "Quizzes retrieved successfully", quizzes);
+      sendResponse(res, statusCodes.OK, messages.QUIZ_FETCHED, quizzes);
     } catch (err) {
       next(err);
     }

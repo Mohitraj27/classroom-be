@@ -55,6 +55,18 @@ const messages = {
 
     USER_PROFILE_FETCHED: "User profile fetched successfully.",
 
+    QUIZ_FETCHED: "Quiz fetched successfully.",
+    QUIZ_CREATED: "Quiz created successfully.",
+    QUIZ_UPDATED: "Quiz updated successfully.",
+    QUIZ_DELETED: "Quiz deleted successfully.",
+    QUIZ_NOT_FOUND: "Quiz not found.",
+
+
+    CONTENT_CREATED: "Content created successfully.",
+    CONTENT_FETCHED: "Content fetched successfully.",
+    CONTENT_UPDATED: "Content updated successfully.",
+    CONTENT_DELETED: "Content deleted successfully.",
+
   };
   
   export default messages;
