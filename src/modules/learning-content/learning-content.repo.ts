@@ -1,7 +1,7 @@
 import { db } from "@/config/db";
-import { content } from "./learning-content.model";
+import { content, quiz, quizQuestion } from "./learning-content.model";
 import { eq } from "drizzle-orm";
-import { LearningContentRepositoryType } from "./learning-content.types";
+import { LearningContentRepositoryType,QuizContentRepositoryType } from "./learning-content.types";
 
 export class LearningContentRepository implements LearningContentRepositoryType {
   async create(data: any) {
@@ -59,5 +59,51 @@ export class LearningContentRepository implements LearningContentRepositoryType 
     } catch (error) {
       throw new Error(`Failed to find content by createdBy: ${error}`);
     }
+  }
+}
+
+export class QuizRepository implements QuizContentRepositoryType {
+  async createQuiz(quizData: any, questions: any[]) {
+    const [createdQuiz] = await db.insert(quiz).values(quizData).$returningId();
+    console.log('this is created quiz', createdQuiz);
+    if (!createdQuiz) throw new Error('Failed to create quiz');
+    const quizId = createdQuiz.id;
+    const questionRecords = questions.map((q) => ({ ...q, quizId }));
+    await db.insert(quizQuestion).values(questionRecords);
+
+    return { ...createdQuiz, questions: questionRecords };
+  }
+
+  async getQuizById(id: number) {
+    const [foundQuiz] = await db.select().from(quiz).where(eq(quiz.id, id));
+    if (!foundQuiz) return null;
+
+    const questions = await db.select().from(quizQuestion).where(eq(quizQuestion.quizId, id));
+    return { ...foundQuiz, questions };
+  }
+
+  async updateQuiz(id: number, data: any, questions?: any[]) {
+    await db.update(quiz).set(data).where(eq(quiz.id, id));
+
+    if (questions && questions.length > 0) {
+      // remove old questions and insert new (simplest approach)
+      await db.delete(quizQuestion).where(eq(quizQuestion.quizId, id));
+      const questionRecords = questions.map((q) => ({ ...q, quizId: id }));
+      await db.insert(quizQuestion).values(questionRecords);
+    }
+
+    return this.getQuizById(id);
+  }
+
+  async deleteQuiz(id: number) {
+    await db.delete(quizQuestion).where(eq(quizQuestion.quizId, id));
+    await db.delete(quiz).where(eq(quiz.id, id));
+    return { message: 'Quiz deleted successfully' };
+  }
+
+  async getAllQuizzes() {
+    const allQuizzes = await db.select().from(quiz);
+    console.log('this is all quizzes', allQuizzes);
+    return Promise.all(allQuizzes.map((q) => this.getQuizById(q.id)));
   }
 }
