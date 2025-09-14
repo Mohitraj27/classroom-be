@@ -38,7 +38,7 @@ learningContentRouter.post('/create-quiz', protect(UserRole.ADMIN, UserRole.TUTO
 
 learningContentRouter.get('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getQuizById));
 
-learningContentRouter.put('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.updateQuiz));
+learningContentRouter.put('/update-quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.updateQuiz));
 
 learningContentRouter.delete('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.deleteQuiz));
 
