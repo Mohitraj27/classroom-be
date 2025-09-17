@@ -61,9 +61,10 @@ export interface rejectionSignupRequestInput{
   rejectionReason: string;
 }
 export interface UserServiceType {
-  getUsers: (page:number,limit:number) => any;
-  getUser: (id: number) => any;
-  deleteUser: (id: number) => any;
+  exportUserToCSV(): Promise<string | null>;
+  getUsers: (page:number,limit:number) => Promise<any>;
+  getUser: (id: number) => Promise<any>;
+  deleteUser: (id: number) => Promise<any>;
   signupUser: (signupData: signupUserInput) => Promise<any>;
   loginUser: (loginData: LoginUserInput) => Promise<{ user: any }>;
   forgetPassword: (forgetData: forgetPasswordInput) => Promise<any>;
@@ -78,6 +79,7 @@ export interface UserServiceType {
 }
 
 export interface UserControllerType {
+  exportUserToCSV(req: Request,res: Response,next: NextFunction): Promise<any>;
   getAllUsers(req: Request, res: Response, next: NextFunction): Promise<any>;
   getById(req: Request, res: Response, next: NextFunction): Promise<any>;
   signupUser(req: Request, res: Response, next: NextFunction): Promise<any>;

@@ -8,7 +8,9 @@ import crypto from "crypto";
 import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput,approveSignupRequestInput,rejectionSignupRequestInput, UserRole , signupRequestStatus,userFields} from "./user.types";
 import { sendEmail } from "@/utils/emailService";
 import { hashPassword } from "@/utils/password_helper";
+import { uploadBufferToS3 } from "@/utils/aws_helper";
 import dotenv from "dotenv";
+import { Parser } from "json2csv";
 dotenv.config();
 export class UserService implements UserServiceType {
   constructor(private readonly userRepo = new UserRepository()) {}
@@ -184,5 +186,25 @@ export class UserService implements UserServiceType {
   async myProfile(loggedInUserId: any) {
     const user = await this.userRepo.getById(loggedInUserId as number);
     return { ...user[0], updatedAt: new Date() };
+  }
+  async exportUserToCSV() {
+    const users = await this.userRepo.exportUserToCSV();
+  
+    if (!users || users.length === 0) return null;
+  
+    const fields = ["id", "firstName", "lastName", "email", "userName", "role", "createdAt", "updatedAt"];
+    const json2csv = new Parser({ fields });
+    const csv = json2csv.parse(users);
+  
+    // Convert to Buffer
+    const buffer = Buffer.from(csv, "utf-8");
+  
+    // Generate unique file name
+    const fileName = `exports/users_${Date.now()}.csv`;
+  
+    // Upload to S3
+    const fileUrl = await uploadBufferToS3(`users_${Date.now()}.csv`, buffer, "exports");
+
+    return fileUrl;
   }
 }

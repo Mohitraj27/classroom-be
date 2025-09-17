@@ -64,4 +64,7 @@ export class UserRepository {
   async updateProfile(id:number, userData: Partial<signupUserInput>) {
     return db.update(user).set({ ...userData, updatedAt: new Date() }).where(eq(user.id, id));
   }
+  async exportUserToCSV() {
+    return db.select().from(user);
+  }
 }

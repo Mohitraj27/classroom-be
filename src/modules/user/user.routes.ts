@@ -31,4 +31,5 @@ userRouter.get("/viewMyProfile", catchAsync(controller.myProfile));
 userRouter.put("/update-profile",catchAsync(controller.updateUserProfile));
 userRouter.delete("/:id", protect(UserRole.ADMIN), catchAsync(controller.delete));
 
+userRouter.post('/exportUserToCSV',protect(UserRole.ADMIN), catchAsync(controller.exportUserToCSV));
 export default userRouter;

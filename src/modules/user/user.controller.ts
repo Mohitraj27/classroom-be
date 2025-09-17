@@ -5,6 +5,7 @@ import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import { CustomError } from "@/utils/custom_error";
 import { UserServiceType, UserControllerType,signupRequestStatus,approveSignupRequestInput } from "./user.types";
+import { Parser } from "json2csv";
 import jwt from "jsonwebtoken";
 const service: UserServiceType = new UserService();
 
@@ -180,4 +181,17 @@ export class UserController implements UserControllerType {
       next(err);
     }
   }
+  async exportUserToCSV(req: Request, res: Response, next: NextFunction) {
+    try {
+      const fileUrl = await service.exportUserToCSV();
+  
+      if (!fileUrl) {
+        return sendResponse(res, statusCodes.NOT_FOUND, messages.USER_NOT_FOUND, []);
+      }
+  
+      return sendResponse(res, statusCodes.OK, "Users exported successfully", { fileUrl });
+    } catch (err) {
+      next(err);
+    }
+  }  
 }

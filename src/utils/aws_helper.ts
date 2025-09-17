@@ -21,3 +21,16 @@ export const uploadFileToS3 = async (file: Express.Multer.File, folder: string):
   const filePath = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
   return filePath;
 };
+
+export const uploadBufferToS3 = async (fileName: string, buffer: Buffer,folder: string): Promise<string> => {
+  const fileKey = `${folder}/${uuidv4()}-${fileName}`;
+  await s3.putObject({
+      Bucket: process.env.AWS_S3_BUCKET_NAME!,
+      Key: fileKey,
+      Body: buffer,
+      ContentType: "text/csv",
+    }).promise();
+
+  const filePath =  `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+  return filePath;
+};
