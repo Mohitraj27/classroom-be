@@ -114,4 +114,7 @@ export class LearningContentService implements LearningContentServiceType {
   async getAllQuizzes() {
     return this.quizRepo.getAllQuizzes();
   }
+  async assignContentOrQuiz(data: { type: "CONTENT" | "QUIZ"; itemId: number; learnerIds: number[]; assignedBy: number }) {
+    return this.quizRepo.assignContentOrQuiz(data);
+  }
 }

@@ -73,6 +73,11 @@ export const updateQuizDto = z.object({
   ).optional()
 });
 
+export const assignContentOrQuizDto = z.object({
+  type: z.enum(["CONTENT", "QUIZ"]),
+  itemId: z.number().int(), // contentId or quizId
+  learnerIds: z.array(z.number().int().positive()),
+});
 
 export type CreateContentInput = z.infer<typeof createContentDto>;
 export type UpdateContentInput = z.infer<typeof updateContentDto>;
@@ -82,3 +87,4 @@ export type GetContentByModuleInput = z.infer<typeof getContentByModuleDto>;
 export type GetContentCreatedByInput = z.infer<typeof getContentCreatedByDto>;
 export type CreateQuizInput = z.infer<typeof createQuizDto>;
 export type UpdateQuizInput = z.infer<typeof updateQuizDto>;
+export type AssignContentOrQuizInput = z.infer<typeof assignContentOrQuizDto>;

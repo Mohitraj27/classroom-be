@@ -1,5 +1,5 @@
 import { db } from "@/config/db";
-import { content, quiz, quizQuestion } from "./learning-content.model";
+import { content, contentAssignment, quiz, quizQuestion } from "./learning-content.model";
 import { eq } from "drizzle-orm";
 import { LearningContentRepositoryType,QuizContentRepositoryType } from "./learning-content.types";
 
@@ -65,7 +65,6 @@ export class LearningContentRepository implements LearningContentRepositoryType 
 export class QuizRepository implements QuizContentRepositoryType {
   async createQuiz(quizData: any, questions: any[]) {
     const [createdQuiz] = await db.insert(quiz).values(quizData).$returningId();
-    console.log('this is created quiz', createdQuiz);
     if (!createdQuiz) throw new Error('Failed to create quiz');
     const quizId = createdQuiz.id;
     const questionRecords = questions.map((q) => ({ ...q, quizId }));
@@ -105,5 +104,21 @@ export class QuizRepository implements QuizContentRepositoryType {
     const allQuizzes = await db.select().from(quiz);
     console.log('this is all quizzes', allQuizzes);
     return Promise.all(allQuizzes.map((q) => this.getQuizById(q.id)));
+  }
+
+  async assignContentOrQuiz(data:{
+    data: any; type: "CONTENT" | "QUIZ"; itemId: number; learnerIds: number[]; assignedBy: number }) {
+    const values = data.learnerIds.map((learnerId: number) => {
+      if (data.type === "CONTENT") {
+        return {};
+        // return { contentId: data.itemId, learnerId:data.assignedBy,assignedBy: data.assignedBy };
+      } 
+      // else {
+      //   return { quizId: data.itemId, learnerId, data.assignedBy };
+      // }
+    });
+
+    // await db.insert(contentAssignment).values(values);
+    return values;
   }
 }

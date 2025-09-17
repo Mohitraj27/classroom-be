@@ -36,6 +36,7 @@ export const contentAssignment = mysqlTable('contentAssignment', {
   id: int('id').primaryKey().autoincrement(),
   contentId: int('contentId').notNull(), // FK from content
   learnerId: int('learnerId').notNull(), // FK from users
+  quizId: int('quizId').notNull(), // FK from quizzes
   assignedBy: int('assignedBy').notNull(), // tutor/admin
   assignedAt: timestamp('assignedAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });

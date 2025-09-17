@@ -189,7 +189,7 @@ export class UserController implements UserControllerType {
         return sendResponse(res, statusCodes.NOT_FOUND, messages.USER_NOT_FOUND, []);
       }
   
-      return sendResponse(res, statusCodes.OK, "Users exported successfully", { fileUrl });
+      return sendResponse(res, statusCodes.OK, messages.USER_EXPORTED_SUCCESS, { fileUrl });
     } catch (err) {
       next(err);
     }

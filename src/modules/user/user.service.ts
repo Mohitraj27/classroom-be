@@ -196,13 +196,7 @@ export class UserService implements UserServiceType {
     const json2csv = new Parser({ fields });
     const csv = json2csv.parse(users);
   
-    // Convert to Buffer
     const buffer = Buffer.from(csv, "utf-8");
-  
-    // Generate unique file name
-    const fileName = `exports/users_${Date.now()}.csv`;
-  
-    // Upload to S3
     const fileUrl = await uploadBufferToS3(`users_${Date.now()}.csv`, buffer, "exports");
 
     return fileUrl;
