@@ -67,6 +67,9 @@ const messages = {
     CONTENT_UPDATED: "Content updated successfully.",
     CONTENT_DELETED: "Content deleted successfully.",
 
+
+    CONTENT_ASSIGNED_SUCCESS: "Content assigned to learners successfully.",
+    QUIZ_ASSIGNED_SUCCESS: "Quiz assigned to learners successfully.",
   };
   
   export default messages;

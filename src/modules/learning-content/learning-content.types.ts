@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { CreateContentInput ,UpdateContentInput} from "./learning-content.dto";
 
+export enum AssignContentTypeEnum {
+    CONTENT = "CONTENT",
+    QUIZ = "QUIZ"
+}
 export enum ContentTypeEnum {
   VIDEO = "video",
   PDF = "pdf",

@@ -4,7 +4,7 @@ import { CreateContentInput, UpdateContentInput } from "./learning-content.dto";
 import { uploadFileToS3 } from "@/utils/aws_helper";
 import { CustomError } from "@/utils/custom_error";
 import statusCodes from "@/constants/status_codes";
-
+import {AssignContentTypeEnum} from "./learning-content.types";
 export class LearningContentService implements LearningContentServiceType {
   constructor(
     private readonly learningContentRepo = new LearningContentRepository(),
@@ -116,23 +116,23 @@ export class LearningContentService implements LearningContentServiceType {
   }
   async assignContentToLearners(data: { contentId: number; learnerIds: number[]; assignedBy: number }) {
     const values = data.learnerIds.map((learnerId) => ({
-      type: "CONTENT",
+      type: AssignContentTypeEnum.CONTENT,
       contentId: data.contentId,
       learnerId,
       assignedBy: data.assignedBy,
     }));
 
-    return this.quizRepo.assignContent(values); // new repo method
+    return this.quizRepo.assignContent(values);
   }
 
   async assignQuizToLearners(data: { quizId: number; learnerIds: number[]; assignedBy: number }) {
     const values = data.learnerIds.map((learnerId) => ({
-      type: "QUIZ",
+      type: AssignContentTypeEnum.QUIZ,
       quizId: data.quizId,
       learnerId,
       assignedBy: data.assignedBy,
     }));
 
-    return this.quizRepo.assignQuiz(values); // new repo method
+    return this.quizRepo.assignQuiz(values); 
   }
 }

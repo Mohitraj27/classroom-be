@@ -149,7 +149,7 @@ export class LearningContentController implements LearningContentControllerType 
   async assignContent(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.cookies.accessToken;
-      if (!token) return sendResponse(res, 401, "No user logged in");
+      if (!token) return sendResponse(res, 401, messages.NO_USER_LOGGED_IN);
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
       const validated = assignContentDto.parse(req.body);
       const assignments = await service.assignContentToLearners({
@@ -158,7 +158,7 @@ export class LearningContentController implements LearningContentControllerType 
         assignedBy: decoded.userId,
       });
 
-      sendResponse(res, 201, "Content assigned successfully", assignments);
+      sendResponse(res, 201, messages.CONTENT_ASSIGNED_SUCCESS, assignments);
     } catch (err) {
       next(err);
     }
@@ -167,7 +167,7 @@ export class LearningContentController implements LearningContentControllerType 
 async assignQuiz(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.cookies.accessToken;
-      if (!token) return sendResponse(res, 401, "No user logged in");
+      if (!token) return sendResponse(res, 401, messages.NO_USER_LOGGED_IN);
 
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
       const validated = assignQuizDto.parse(req.body);
@@ -178,7 +178,7 @@ async assignQuiz(req: Request, res: Response, next: NextFunction) {
         assignedBy: decoded.userId,
       });
 
-      sendResponse(res, 201, "Quiz assigned successfully", assignments);
+      sendResponse(res, 201, messages.QUIZ_ASSIGNED_SUCCESS, assignments);
     } catch (err) {
       next(err);
     }
