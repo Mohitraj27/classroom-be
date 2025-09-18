@@ -2,7 +2,8 @@ import { db } from "@/config/db";
 import { content, contentAssignment, quiz, quizQuestion } from "./learning-content.model";
 import { eq } from "drizzle-orm";
 import { LearningContentRepositoryType,QuizContentRepositoryType } from "./learning-content.types";
-
+import { user } from "@/modules/user/user.model";
+import { UserRole } from "@/modules/user/user.types";
 export class LearningContentRepository implements LearningContentRepositoryType {
   async create(data: any) {
     try {
@@ -94,7 +95,6 @@ export class QuizRepository implements QuizContentRepositoryType {
 
   async getAllQuizzes() {
     const allQuizzes = await db.select().from(quiz);
-    console.log('this is all quizzes', allQuizzes);
     return Promise.all(allQuizzes.map((q) => this.getQuizById(q.id)));
   }
 
@@ -104,5 +104,15 @@ export class QuizRepository implements QuizContentRepositoryType {
 
   async assignQuiz(values: any[]) {
     return db.insert(contentAssignment).values(values);
+  }
+  async validateLearner(learnerId: number) {
+    const [foundLearner] = await db.select().from(user).where(eq(user.id, learnerId));
+    if (!foundLearner) return null;
+  
+    if (foundLearner.role !== UserRole.LEARNER) {
+      throw new Error(`User ${learnerId} is not a Learner. Content/Quiz can only be assigned to Learners.`);
+    }
+  
+    return foundLearner;
   }
 }

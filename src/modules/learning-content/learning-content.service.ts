@@ -108,10 +108,13 @@ export class LearningContentService implements LearningContentServiceType {
     return this.quizRepo.getAllQuizzes();
   }
   async assignContentToLearners(data: { contentId: number; learnerIds: number[]; assignedBy: number }) {
+    await Promise.all(data.learnerIds.map(async (learnerId) => {
+       await this.quizRepo.validateLearner(learnerId);
+    }));
     const values = data.learnerIds.map((learnerId) => ({
       type: AssignContentTypeEnum.CONTENT,
       contentId: data.contentId,
-      learnerId,
+      learnerId: learnerId,
       assignedBy: data.assignedBy,
     }));
 
@@ -119,10 +122,13 @@ export class LearningContentService implements LearningContentServiceType {
   }
 
   async assignQuizToLearners(data: { quizId: number; learnerIds: number[]; assignedBy: number }) {
+    await Promise.all(data.learnerIds.map(async (learnerId) => {
+      await this.quizRepo.validateLearner(learnerId);
+    }));
     const values = data.learnerIds.map((learnerId) => ({
       type: AssignContentTypeEnum.QUIZ,
       quizId: data.quizId,
-      learnerId,
+      learnerId: learnerId,
       assignedBy: data.assignedBy,
     }));
 
