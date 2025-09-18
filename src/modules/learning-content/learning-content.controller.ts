@@ -69,15 +69,6 @@ export class LearningContentController implements LearningContentControllerType 
     }
   }
 
-  async getByModule(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const validatedParams = getContentByModuleDto.parse(req.params);
-      const contents = await service.getContentByModule(validatedParams.moduleId);
-      sendResponse(res, statusCodes.OK, messages.CONTENT_FETCHED, contents);
-    } catch (err) {
-      next(err);
-    }
-  }
 
   async getByCreatedBy(req:Request,res:Response,next:NextFunction): Promise<void>{
     try {
@@ -164,24 +155,24 @@ export class LearningContentController implements LearningContentControllerType 
     }
 }
 
-async assignQuiz(req: Request, res: Response, next: NextFunction) {
-    try {
-      const token = req.cookies.accessToken;
-      if (!token) return sendResponse(res, 401, messages.NO_USER_LOGGED_IN);
+  async assignQuiz(req: Request, res: Response, next: NextFunction) {
+      try {
+        const token = req.cookies.accessToken;
+        if (!token) return sendResponse(res, 401, messages.NO_USER_LOGGED_IN);
 
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-      const validated = assignQuizDto.parse(req.body);
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+        const validated = assignQuizDto.parse(req.body);
 
-      const assignments = await service.assignQuizToLearners({
-        quizId: validated.quizId,
-        learnerIds: validated.learnerIds,
-        assignedBy: decoded.userId,
-      });
+        const assignments = await service.assignQuizToLearners({
+          quizId: validated.quizId,
+          learnerIds: validated.learnerIds,
+          assignedBy: decoded.userId,
+        });
 
-      sendResponse(res, 201, messages.QUIZ_ASSIGNED_SUCCESS, assignments);
-    } catch (err) {
-      next(err);
-    }
-}
+        sendResponse(res, 201, messages.QUIZ_ASSIGNED_SUCCESS, assignments);
+      } catch (err) {
+        next(err);
+      }
+  }
 
 }

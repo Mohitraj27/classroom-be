@@ -15,7 +15,6 @@ export interface LearningContentServiceType {
     getContentById(id: number): Promise<any>;
     updateContent(id: number, input: UpdateContentInput): Promise<any>;
     deleteContent(id: number): Promise<any>;
-    getContentByModule(moduleId: number): Promise<any>;
     getContentByCreatedBy(userId: number): Promise<any>;
     createQuiz(data: any): Promise<any>;
     getQuizById(id: number): Promise<any>;
@@ -31,7 +30,6 @@ export interface LearningContentControllerType {
     update(req: any, res: any, next: any): Promise<any>;
     getById(req: any, res: any, next: any): Promise<any>;
     delete(req: any, res: any, next: any): Promise<any>;
-    getByModule(req: any, res: any, next: any): Promise<any>;
     getByCreatedBy(req: any, res: any, next: any): Promise<any>;
     createQuiz(req: any, res: any, next: any): Promise<any>;
     getQuizById(req: any, res: any, next: any): Promise<any>;
@@ -47,7 +45,6 @@ export interface LearningContentRepositoryType{
     findById(id: number): Promise<any>;
     update(id: number, input: UpdateContentInput): Promise<any>;
     delete(id: number): Promise<any>;
-    findByModule(moduleId: number): Promise<any>;
 }
 
 export interface QuizContentRepositoryType {

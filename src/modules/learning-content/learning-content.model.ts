@@ -4,7 +4,6 @@ import { sql } from 'drizzle-orm';
 // === 4. Learning Content ===
 export const content = mysqlTable('content', {
   id: int('id').primaryKey().autoincrement(),
-  moduleId: int('moduleId'), // FK from unit
   contentUrl: varchar('contentUrl', { length: 500 }), // For video / PDF / PPT files
   contentType: varchar('contentType', { length: 50 }).notNull(), // video / pdf / ppt
   embedLink: varchar('embedLink', { length: 500 }), // For embedded videos
@@ -15,7 +14,6 @@ export const content = mysqlTable('content', {
 // === 5. Quiz ===
 export const quiz = mysqlTable('quizzes', {
   id: int('id').primaryKey().autoincrement(),
-  moduleId: int('moduleId'), // FK from unit
   title: varchar('title', { length: 255 }).notNull(),
   totalMarks: int('totalMarks').default(0),
   createdBy: int('createdBy').notNull(),

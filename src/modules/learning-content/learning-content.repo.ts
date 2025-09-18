@@ -44,14 +44,6 @@ export class LearningContentRepository implements LearningContentRepositoryType 
     }
   }
 
-  async findByModule(moduleId: number) {
-    try {
-      const result = await db.select().from(content).where(eq(content.moduleId, moduleId));
-      return result;
-    } catch (error) {
-      throw new Error(`Failed to find content by module: ${error}`);
-    }
-  }
   async findByCreatedBy(createdBy: number) {
     try {
       const result = await db.select().from(content).where(eq(content.createdBy, createdBy));

@@ -28,7 +28,6 @@ learningContentRouter.put('/update-content/:id',protect(UserRole.ADMIN, UserRole
 
 learningContentRouter.delete('/delete-content/:id',protect(UserRole.ADMIN, UserRole.TUTOR), catchAsync(controller.delete));
 
-learningContentRouter.get('/module/:moduleId',protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getByModule));
 
 learningContentRouter.get('/getContentBytutor/:createdBy',protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getByCreatedBy));
 

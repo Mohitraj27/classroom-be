@@ -69,14 +69,7 @@ export class LearningContentService implements LearningContentServiceType {
     }
   }
 
-  async getContentByModule(moduleId: number) {
-    try {
-      const contents = await this.learningContentRepo.findByModule(moduleId);
-      return contents;
-    } catch (error) {
-      throw error;
-    }
-  }
+  
   async getContentByCreatedBy(userId: number) {
     try {
       const contents = await this.learningContentRepo.findByCreatedBy(userId);
