@@ -114,7 +114,25 @@ export class LearningContentService implements LearningContentServiceType {
   async getAllQuizzes() {
     return this.quizRepo.getAllQuizzes();
   }
-  async assignContentOrQuiz(data: { type: "CONTENT" | "QUIZ"; itemId: number; learnerIds: number[]; assignedBy: number }) {
-    return this.quizRepo.assignContentOrQuiz(data);
+  async assignContentToLearners(data: { contentId: number; learnerIds: number[]; assignedBy: number }) {
+    const values = data.learnerIds.map((learnerId) => ({
+      type: "CONTENT",
+      contentId: data.contentId,
+      learnerId,
+      assignedBy: data.assignedBy,
+    }));
+
+    return this.quizRepo.assignContent(values); // new repo method
+  }
+
+  async assignQuizToLearners(data: { quizId: number; learnerIds: number[]; assignedBy: number }) {
+    const values = data.learnerIds.map((learnerId) => ({
+      type: "QUIZ",
+      quizId: data.quizId,
+      learnerId,
+      assignedBy: data.assignedBy,
+    }));
+
+    return this.quizRepo.assignQuiz(values); // new repo method
   }
 }

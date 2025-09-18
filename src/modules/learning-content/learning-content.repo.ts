@@ -106,19 +106,11 @@ export class QuizRepository implements QuizContentRepositoryType {
     return Promise.all(allQuizzes.map((q) => this.getQuizById(q.id)));
   }
 
-  async assignContentOrQuiz(data:{
-    data: any; type: "CONTENT" | "QUIZ"; itemId: number; learnerIds: number[]; assignedBy: number }) {
-    const values = data.learnerIds.map((learnerId: number) => {
-      if (data.type === "CONTENT") {
-        return {};
-        // return { contentId: data.itemId, learnerId:data.assignedBy,assignedBy: data.assignedBy };
-      } 
-      // else {
-      //   return { quizId: data.itemId, learnerId, data.assignedBy };
-      // }
-    });
+  async assignContent(values: any[]) {
+    return db.insert(contentAssignment).values(values);
+  }
 
-    // await db.insert(contentAssignment).values(values);
-    return values;
+  async assignQuiz(values: any[]) {
+    return db.insert(contentAssignment).values(values);
   }
 }

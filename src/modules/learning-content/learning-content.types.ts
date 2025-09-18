@@ -7,7 +7,6 @@ export enum ContentTypeEnum {
   PPT = "ppt"
 }
 export interface LearningContentServiceType {
-    assignContentOrQuiz(arg0: { assignedBy: any; type: "CONTENT" | "QUIZ"; itemId: number; learnerIds: number[]; }): unknown;
     createContent(input: CreateContentInput, file: Express.Multer.File, userId: number): Promise<any>;
     getContentById(id: number): Promise<any>;
     updateContent(id: number, input: UpdateContentInput): Promise<any>;
@@ -19,6 +18,8 @@ export interface LearningContentServiceType {
     updateQuiz(id: number, data: any): Promise<any>;
     deleteQuiz(id: number): Promise<any>;
     getAllQuizzes(): Promise<any>;
+    assignContentToLearners(data: { contentId: number; learnerIds: number[]; assignedBy: number }): Promise<any>;
+    assignQuizToLearners(data: { quizId: number; learnerIds: number[]; assignedBy: number }): Promise<any>;
 }
 
 export interface LearningContentControllerType {
@@ -33,7 +34,8 @@ export interface LearningContentControllerType {
     updateQuiz(req: any, res: any, next: any): Promise<any>;
     deleteQuiz(req: any, res: any, next: any): Promise<any>;
     getAllQuizzes(req: any, res: any, next: any): Promise<any>;
-    assignContentOrQuiz(req: any, res: any, next: any): Promise<any>;
+    assignContent(req: any, res: any, next: any): Promise<any>;
+    assignQuiz(req: any, res: any, next: any): Promise<any>;
 }
 
 export interface LearningContentRepositoryType{
@@ -50,5 +52,6 @@ export interface QuizContentRepositoryType {
     updateQuiz(id: number, data: any, questions?: any[]): Promise<any>;
     deleteQuiz(id: number): Promise<any>;
     getAllQuizzes(): Promise<any>;
-    assignContentOrQuiz(data: { type: "CONTENT" | "QUIZ"; itemId: number; learnerIds: number[]; assignedBy: number }): Promise<any>;
+    assignContent(values: any[]): Promise<any>;
+    assignQuiz(values: any[]): Promise<any>;
 }

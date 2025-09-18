@@ -34,9 +34,10 @@ export const quizQuestion = mysqlTable('quizQuestions', {
 // === 7. Learner Assigned Content ===
 export const contentAssignment = mysqlTable('contentAssignment', {
   id: int('id').primaryKey().autoincrement(),
-  contentId: int('contentId').notNull(), // FK from content
+  type: varchar('type', { length: 20 }).notNull().default('CONTENT'), 
+  contentId: int('contentId'), // FK from content
+  quizId: int('quizId'), // FK from quizzes
   learnerId: int('learnerId').notNull(), // FK from users
-  quizId: int('quizId').notNull(), // FK from quizzes
   assignedBy: int('assignedBy').notNull(), // tutor/admin
   assignedAt: timestamp('assignedAt').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });

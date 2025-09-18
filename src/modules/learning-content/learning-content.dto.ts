@@ -73,10 +73,14 @@ export const updateQuizDto = z.object({
   ).optional()
 });
 
-export const assignContentOrQuizDto = z.object({
-  type: z.enum(["CONTENT", "QUIZ"]),
-  itemId: z.number().int(), // contentId or quizId
-  learnerIds: z.array(z.number().int().positive()),
+export const assignContentDto = z.object({
+  contentId: z.number().min(1, "Content ID is required"),
+  learnerIds: z.array(z.number().min(1, "Learner ID must be positive")),
+});
+
+export const assignQuizDto = z.object({
+  quizId: z.number().min(1, "Quiz ID is required"),
+  learnerIds: z.array(z.number().min(1, "Learner ID must be positive")),
 });
 
 export type CreateContentInput = z.infer<typeof createContentDto>;
@@ -87,4 +91,5 @@ export type GetContentByModuleInput = z.infer<typeof getContentByModuleDto>;
 export type GetContentCreatedByInput = z.infer<typeof getContentCreatedByDto>;
 export type CreateQuizInput = z.infer<typeof createQuizDto>;
 export type UpdateQuizInput = z.infer<typeof updateQuizDto>;
-export type AssignContentOrQuizInput = z.infer<typeof assignContentOrQuizDto>;
+export type AssignContentInput = z.infer<typeof assignContentDto>;
+export type AssignQuizInput = z.infer<typeof assignQuizDto>;

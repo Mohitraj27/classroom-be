@@ -6,7 +6,7 @@ import { protect } from "@/middlewares/protect.middleware";
 import { LearningContentControllerType } from "./learning-content.types";
 import { UserRole } from "../user/user.types";
 import { validateRequest } from "@/middlewares/validate.middleware";
-import { createContentDto, updateContentDto, getContentByIdDto, deleteContentDto, getContentByModuleDto,assignContentOrQuizDto } from "./learning-content.dto";
+import { createContentDto, updateContentDto, getContentByIdDto, deleteContentDto, getContentByModuleDto,assignContentDto,assignQuizDto } from "./learning-content.dto";
 import { get } from "http";
 const controller: LearningContentControllerType = new LearningContentController();
 
@@ -45,5 +45,7 @@ learningContentRouter.delete('/quiz/:id', protect(UserRole.ADMIN, UserRole.TUTOR
 learningContentRouter.get('/quizzes', protect(UserRole.ADMIN, UserRole.TUTOR, UserRole.LEARNER), catchAsync(controller.getAllQuizzes));
 
 
-learningContentRouter.post('/assignContentOrQuiz', protect(UserRole.ADMIN, UserRole.TUTOR), validateRequest(assignContentOrQuizDto), catchAsync(controller.assignContentOrQuiz));
+learningContentRouter.post('/assign-content-to-Learner',protect(UserRole.ADMIN, UserRole.TUTOR),validateRequest(assignContentDto),catchAsync(controller.assignContent));
+
+learningContentRouter.post('/assign-quiz-to-Learner',protect(UserRole.ADMIN, UserRole.TUTOR),validateRequest(assignQuizDto),catchAsync(controller.assignQuiz));
 export default learningContentRouter;

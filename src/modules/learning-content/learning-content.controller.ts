@@ -4,7 +4,7 @@ import { LearningContentService } from './learning-content.service';
 import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import { LearningContentServiceType, LearningContentControllerType, ContentTypeEnum} from "./learning-content.types";
-import {  createContentDto,  updateContentDto,  getContentByIdDto,  deleteContentDto,  getContentByModuleDto, getContentCreatedByDto, updateQuizDto, createQuizDto ,assignContentOrQuizDto} from "./learning-content.dto";
+import {  createContentDto,  updateContentDto,  getContentByIdDto,  deleteContentDto,  getContentByModuleDto, getContentCreatedByDto, updateQuizDto, createQuizDto ,assignContentDto,assignQuizDto} from "./learning-content.dto";
 import jwt from "jsonwebtoken";
 
 const service: LearningContentServiceType = new LearningContentService();
@@ -146,25 +146,42 @@ export class LearningContentController implements LearningContentControllerType 
       next(err);
     }
   }
-  async assignContentOrQuiz(req: Request, res: Response, next: NextFunction) {
-  try {
-    const token = req.cookies.accessToken;
-    if (!token) {
-      sendResponse(res, statusCodes.UNAUTHORIZED, messages.NO_USER_LOGGED_IN);
-      return;
+  async assignContent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) return sendResponse(res, 401, "No user logged in");
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const validated = assignContentDto.parse(req.body);
+      const assignments = await service.assignContentToLearners({
+        contentId: validated.contentId,
+        learnerIds: validated.learnerIds,
+        assignedBy: decoded.userId,
+      });
+
+      sendResponse(res, 201, "Content assigned successfully", assignments);
+    } catch (err) {
+      next(err);
     }
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-    const validatedData = assignContentOrQuizDto.parse(req.body);
+}
 
-    const assignments = await service.assignContentOrQuiz({
-      ...validatedData,
-      assignedBy: decoded.userId,
-    });
+async assignQuiz(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) return sendResponse(res, 401, "No user logged in");
 
-    sendResponse(res, statusCodes.CREATED, "Assigned successfully", assignments);
-  } catch (err) {
-    next(err);
-  }
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const validated = assignQuizDto.parse(req.body);
+
+      const assignments = await service.assignQuizToLearners({
+        quizId: validated.quizId,
+        learnerIds: validated.learnerIds,
+        assignedBy: decoded.userId,
+      });
+
+      sendResponse(res, 201, "Quiz assigned successfully", assignments);
+    } catch (err) {
+      next(err);
+    }
 }
 
 }
