@@ -30,7 +30,7 @@ export const quizQuestion = mysqlTable('quizQuestions', {
 });
 
 // === 7. Learner Assigned Content ===
-export const contentAssignment = mysqlTable('contentAssignment', {
+export const learnerAssignment = mysqlTable('learnerAssignment', {
   id: int('id').primaryKey().autoincrement(),
   type: varchar('type', { length: 20 }).notNull().default('CONTENT'), 
   contentId: int('contentId'), // FK from content

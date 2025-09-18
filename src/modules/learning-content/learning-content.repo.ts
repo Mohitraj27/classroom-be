@@ -1,5 +1,5 @@
 import { db } from "@/config/db";
-import { content, contentAssignment, quiz, quizQuestion } from "./learning-content.model";
+import { content, learnerAssignment, quiz, quizQuestion } from "./learning-content.model";
 import { eq } from "drizzle-orm";
 import { LearningContentRepositoryType,QuizContentRepositoryType } from "./learning-content.types";
 import { user } from "@/modules/user/user.model";
@@ -99,11 +99,11 @@ export class QuizRepository implements QuizContentRepositoryType {
   }
 
   async assignContent(values: any[]) {
-    return db.insert(contentAssignment).values(values);
+    return db.insert(learnerAssignment).values(values);
   }
 
   async assignQuiz(values: any[]) {
-    return db.insert(contentAssignment).values(values);
+    return db.insert(learnerAssignment).values(values);
   }
   async validateLearner(learnerId: number) {
     const [foundLearner] = await db.select().from(user).where(eq(user.id, learnerId));
