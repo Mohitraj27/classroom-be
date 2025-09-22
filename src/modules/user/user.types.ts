@@ -1,5 +1,6 @@
 
 import { Request, Response, NextFunction } from "express";
+import { AssignContentTypeEnum } from "../learning-content/learning-content.types";
 
 export enum UserRole {
   ADMIN = "admin",
@@ -76,6 +77,7 @@ export interface UserServiceType {
   rejectSignupRequest: (rejectSignupRequest: rejectionSignupRequestInput) => Promise<any>;
   updateUserProfile: (updatedUser: number, updatedData: Partial<signupUserInput>) => Promise<any>;
   myProfile: (loggedInUserId: any) => any;
+  getAllAssignedQuizorContent: (userId: number, type?: AssignContentTypeEnum, itemId?: number) => Promise<any>;
 }
 
 export interface UserControllerType {
@@ -95,6 +97,7 @@ export interface UserControllerType {
   rejectSignupRequest(req: Request, res: Response, next: NextFunction): Promise<any>;
   updateUserProfile(req: Request, res: Response, next: NextFunction): Promise<any>;
   myProfile(req: Request, res: Response, next: NextFunction): Promise<any>;
+  getAllAssignedQuizorContent(req:Request,res:Response,next:NextFunction):Promise<any>;
 }
 export interface CustomErrorType  {
   message: string;

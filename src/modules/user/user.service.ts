@@ -11,6 +11,7 @@ import { hashPassword } from "@/utils/password_helper";
 import { uploadBufferToS3 } from "@/utils/aws_helper";
 import dotenv from "dotenv";
 import { Parser } from "json2csv";
+import { AssignContentTypeEnum } from "../learning-content/learning-content.types";
 dotenv.config();
 export class UserService implements UserServiceType {
   constructor(private readonly userRepo = new UserRepository()) {}
@@ -201,4 +202,20 @@ export class UserService implements UserServiceType {
 
     return fileUrl;
   }
+  async getAllAssignedQuizorContent(userId: number, type?: string, itemId?: number) {
+    if (!type) {
+      const [quizzes, contents] = await Promise.all([this.userRepo.getAllAssignedQuizzes(userId),this.userRepo.getAllAssignedContents(userId), ]);
+      return { quizzes, contents };
+    }
+  
+    if (type.toUpperCase() === AssignContentTypeEnum.QUIZ) {
+      if (!itemId) return this.userRepo.getAllAssignedQuizzes(userId);
+      return this.userRepo.getAssignedQuiz(userId, itemId);
+    } else if (type.toUpperCase() === AssignContentTypeEnum.CONTENT) {
+      if (!itemId) return this.userRepo.getAllAssignedContents(userId);
+      return this.userRepo.getAssignedContent(userId, itemId);
+    } else {
+      throw new CustomError(messages.INVALID_ASSIGNMENT_TYPE, statusCodes.BAD_REQUEST);
+    }
+  }  
 }

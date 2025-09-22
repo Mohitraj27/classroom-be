@@ -70,6 +70,8 @@ const messages = {
 
     CONTENT_ASSIGNED_SUCCESS: "Content assigned to learners successfully.",
     QUIZ_ASSIGNED_SUCCESS: "Quiz assigned to learners successfully.",
+    INVALID_ASSIGNMENT_TYPE:"Invalid assignment type.Must be either content or quiz.",
+    USERS_ASSIGNED_CONTENT_OR_QUIZ_FETCHED:"Contents or Quizes assigned to learner fetched successfully.",
   };
   
   export default messages;

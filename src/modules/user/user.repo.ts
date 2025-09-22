@@ -1,7 +1,8 @@
 import { db } from "@/config/db";
 import { user, signupRequest, historySignupRequest } from "./user.model";
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { resetTokenType, signupUserInput,resetPasswordInput,UserRole,signupRequestStatus, rejectionSignupRequestInput } from "./user.types";
+import {learnerAssignment } from '../learning-content/learning-content.model';
 export class UserRepository {
   async getAll(page:number,limit:number) {
     return db.select().from(user).limit(limit).offset((page-1)*limit);
@@ -66,5 +67,20 @@ export class UserRepository {
   }
   async exportUserToCSV() {
     return db.select().from(user);
+  }
+  async getAllAssignedQuizzes(userId: number) {
+    return db.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId),isNotNull(learnerAssignment.quizId)));
+  }
+  
+  async getAllAssignedContents(userId: number) {
+    return db.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId),isNotNull(learnerAssignment.contentId)));
+  }
+  
+  async getAssignedQuiz(userId: number, quizId: number) {
+    return db.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId),eq(learnerAssignment.quizId, quizId)));
+  }
+  
+  async getAssignedContent(userId: number, contentId: number) {
+    return db.select().from(learnerAssignment).where(and( eq(learnerAssignment.learnerId, userId), eq(learnerAssignment.contentId, contentId)));
   }
 }

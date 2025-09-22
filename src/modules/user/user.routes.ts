@@ -32,4 +32,6 @@ userRouter.put("/update-profile",catchAsync(controller.updateUserProfile));
 userRouter.delete("/:id", protect(UserRole.ADMIN), catchAsync(controller.delete));
 
 userRouter.post('/exportUserToCSV',protect(UserRole.ADMIN), catchAsync(controller.exportUserToCSV));
+
+userRouter.get('/getAllAssignedQuizorContent',protect(UserRole.LEARNER),catchAsync(controller.getAllAssignedQuizorContent));
 export default userRouter;

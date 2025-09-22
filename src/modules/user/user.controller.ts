@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { sendResponse } from "@/middlewares/response.middleware";
 import { UserService } from "./user.service";
 import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
@@ -7,6 +6,8 @@ import { CustomError } from "@/utils/custom_error";
 import { UserServiceType, UserControllerType,signupRequestStatus,approveSignupRequestInput } from "./user.types";
 import { Parser } from "json2csv";
 import jwt from "jsonwebtoken";
+import { sendResponse } from "@/middlewares/response.middleware";
+import { AssignContentTypeEnum } from '@/modules/learning-content/learning-content.types';
 const service: UserServiceType = new UserService();
 
 export class UserController implements UserControllerType {
@@ -189,7 +190,26 @@ export class UserController implements UserControllerType {
         return sendResponse(res, statusCodes.NOT_FOUND, messages.USER_NOT_FOUND, []);
       }
   
-      return sendResponse(res, statusCodes.OK, messages.USER_EXPORTED_SUCCESS, { fileUrl });
+    sendResponse(res, statusCodes.OK, messages.USER_EXPORTED_SUCCESS, { fileUrl });
+    } catch (err) {
+      next(err);
+    }
+  }  
+  async getAllAssignedQuizorContent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) {
+        throw new CustomError(messages.NO_USER_LOGGED_IN, statusCodes.UNAUTHORIZED);
+      }
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const loggedInUserId = decoded.userId;
+      const { type, id } = req.query;
+      const typeEnum = type ? (type.toString().toUpperCase() as keyof typeof AssignContentTypeEnum): undefined;
+      const result = await service.getAllAssignedQuizorContent( loggedInUserId,typeEnum ? AssignContentTypeEnum[typeEnum] : undefined,
+        id ? Number(id) : undefined
+      );
+  
+    sendResponse(res, statusCodes.OK, messages.USERS_ASSIGNED_CONTENT_OR_QUIZ_FETCHED, result);
     } catch (err) {
       next(err);
     }

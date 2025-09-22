@@ -53,6 +53,9 @@ export const rejectSignupRequestDto = z.object({
   rejectionReason: z.string().min(1, "Rejection reason is required").max(180, "Rejection reason must be at most 180 characters"),
 });
 
+export const getAssignedContentorQuiz = z.object({
+  typeOfContent: z.enum(["content", "quiz"]).default("content"),
+});
 export type ResetPasswordInput = z.infer<typeof resetPasswordDto>;
 export type ForgetPasswordInput = z.infer<typeof forgetPasswordDto>;
 export type LoginUserInput = z.infer<typeof loginUserDto>;
