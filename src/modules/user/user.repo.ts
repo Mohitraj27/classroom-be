@@ -1,8 +1,8 @@
 import { db } from "@/config/db";
 import { user, signupRequest, historySignupRequest } from "./user.model";
 import { and, eq, isNotNull } from "drizzle-orm";
-import { resetTokenType, signupUserInput,resetPasswordInput,UserRole,signupRequestStatus, rejectionSignupRequestInput } from "./user.types";
-import {learnerAssignment } from '../learning-content/learning-content.model';
+import { resetTokenType, signupUserInput,resetPasswordInput,UserRole,signupRequestStatus, rejectionSignupRequestInput,answerQuizInput } from "./user.types";
+import {learnerAssignment,quizSubmission,quizAnswer } from '@/modules/learning-content/learning-content.model';
 export class UserRepository {
   async getAll(page:number,limit:number) {
     return db.select().from(user).limit(limit).offset((page-1)*limit);
@@ -83,4 +83,22 @@ export class UserRepository {
   async getAssignedContent(userId: number, contentId: number) {
     return db.select().from(learnerAssignment).where(and( eq(learnerAssignment.learnerId, userId), eq(learnerAssignment.contentId, contentId)));
   }
+  async answerQuiz(answerQuizInput: answerQuizInput) {
+    const [submission] = await db.insert(quizSubmission).values({quizId: answerQuizInput.quizId,learnerId: answerQuizInput.learnerId,}).$returningId();
+    await db.insert(quizAnswer).values({
+      submissionId: submission.id,
+      questionId: answerQuizInput.questionId,
+      selectedAnswer: answerQuizInput.selectedAnswer,
+      isCorrect: answerQuizInput.isCorrect ?? false,
+      marksObtained: answerQuizInput.marksObtained ?? 0,
+   });
+    return { message: 'Quiz Answered successfully' };
+  }
+  async isQuizAssignedToLearner(quizId: number, learnerId: number) {
+    return await db.select().from(learnerAssignment).where(and(eq(learnerAssignment.quizId, quizId), eq(learnerAssignment.learnerId, learnerId)));
+  }
+  
+  async hasAlreadySubmittedQuiz(quizId: number, learnerId: number) {
+    return await db.select().from(quizSubmission).where(and(eq(quizSubmission.quizId, quizId), eq(quizSubmission.learnerId, learnerId)));
+   }
 }

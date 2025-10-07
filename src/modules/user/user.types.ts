@@ -61,6 +61,15 @@ export interface rejectionSignupRequestInput{
   id: number;
   rejectionReason: string;
 }
+export interface answerQuizInput{
+  questionId: number;
+  selectedAnswer: string;
+  isCorrect: boolean;
+  marksObtained: number;
+  learnerId: number,
+  quizId: number,
+  answers: string[]
+}
 export interface UserServiceType {
   exportUserToCSV(): Promise<string | null>;
   getUsers: (page:number,limit:number) => Promise<any>;
@@ -78,6 +87,7 @@ export interface UserServiceType {
   updateUserProfile: (updatedUser: number, updatedData: Partial<signupUserInput>) => Promise<any>;
   myProfile: (loggedInUserId: any) => any;
   getAllAssignedQuizorContent: (userId: number, type?: AssignContentTypeEnum, itemId?: number) => Promise<any>;
+  answerQuiz: (answerQuizInput: answerQuizInput) => Promise<any>;
 }
 
 export interface UserControllerType {
@@ -98,6 +108,7 @@ export interface UserControllerType {
   updateUserProfile(req: Request, res: Response, next: NextFunction): Promise<any>;
   myProfile(req: Request, res: Response, next: NextFunction): Promise<any>;
   getAllAssignedQuizorContent(req:Request,res:Response,next:NextFunction):Promise<any>;
+  answerQuiz(req:Request,res:Response,next:NextFunction):Promise<any>;
 }
 export interface CustomErrorType  {
   message: string;

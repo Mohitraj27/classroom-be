@@ -34,4 +34,5 @@ userRouter.delete("/:id", protect(UserRole.ADMIN), catchAsync(controller.delete)
 userRouter.post('/exportUserToCSV',protect(UserRole.ADMIN), catchAsync(controller.exportUserToCSV));
 
 userRouter.get('/getAllAssignedQuizorContent',protect(UserRole.LEARNER),catchAsync(controller.getAllAssignedQuizorContent));
+userRouter.post('/answer-quiz',protect(UserRole.LEARNER),catchAsync(controller.answerQuiz));
 export default userRouter;

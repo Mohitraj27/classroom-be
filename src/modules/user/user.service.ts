@@ -5,12 +5,12 @@ import statusCodes from "@/constants/status_codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput,approveSignupRequestInput,rejectionSignupRequestInput, UserRole , signupRequestStatus,userFields} from "./user.types";
+import { signupUserInput, LoginUserInput, forgetPasswordInput,UserServiceType, resetPasswordInput,approveSignupRequestInput,rejectionSignupRequestInput, UserRole , signupRequestStatus,userFields, answerQuizInput} from "./user.types";
 import { sendEmail } from "@/utils/emailService";
 import { hashPassword } from "@/utils/password_helper";
 import { uploadBufferToS3 } from "@/utils/aws_helper";
 import dotenv from "dotenv";
-import { Parser } from "json2csv";
+import { Parser } from "@json2csv/plainjs";
 import { AssignContentTypeEnum } from "../learning-content/learning-content.types";
 dotenv.config();
 export class UserService implements UserServiceType {
@@ -214,8 +214,20 @@ export class UserService implements UserServiceType {
     } else if (type.toUpperCase() === AssignContentTypeEnum.CONTENT) {
       if (!itemId) return this.userRepo.getAllAssignedContents(userId);
       return this.userRepo.getAssignedContent(userId, itemId);
-    } else {
-      throw new CustomError(messages.INVALID_ASSIGNMENT_TYPE, statusCodes.BAD_REQUEST);
     }
-  }  
+  }
+  async answerQuiz(quizAnswer: answerQuizInput) {
+    const { quizId, learnerId } = quizAnswer;
+
+    const assigned = await this.userRepo.isQuizAssignedToLearner(quizId, learnerId);
+    if (!assigned.length) {
+      throw new CustomError(messages.QUIZ_NOT_ASSIGNED, statusCodes.FORBIDDEN);
+    }
+  
+    const existingSubmission = await this.userRepo.hasAlreadySubmittedQuiz(quizId, learnerId);
+    if (existingSubmission.length > 0) {
+      throw new CustomError(messages.QUIZ_ALREADY_SUBMITTED, statusCodes.CONFLICT);
+    }
+    return await  this.userRepo.answerQuiz(quizAnswer);
+  }
 }

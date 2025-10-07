@@ -4,7 +4,6 @@ import messages from "@/enums/common.enum";
 import statusCodes from "@/constants/status_codes";
 import { CustomError } from "@/utils/custom_error";
 import { UserServiceType, UserControllerType,signupRequestStatus,approveSignupRequestInput } from "./user.types";
-import { Parser } from "json2csv";
 import jwt from "jsonwebtoken";
 import { sendResponse } from "@/middlewares/response.middleware";
 import { AssignContentTypeEnum } from '@/modules/learning-content/learning-content.types';
@@ -212,6 +211,23 @@ export class UserController implements UserControllerType {
     sendResponse(res, statusCodes.OK, messages.USERS_ASSIGNED_CONTENT_OR_QUIZ_FETCHED, result);
     } catch (err) {
       next(err);
+    }
+  }
+  async answerQuiz(req:Request,res:Response,next:NextFunction){
+    try {
+      const token = req.cookies.accessToken;
+      if(!token){
+        throw new CustomError(messages.NO_USER_LOGGED_IN,statusCodes.UNAUTHORIZED);
+      }
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const quizAnswerPayload = {
+        ...req.body,
+        learnerId: decoded.userId,
+      };
+      const result = await service.answerQuiz(quizAnswerPayload);
+      sendResponse(res, statusCodes.OK, messages.USER_ANSWERED_QUIZ, result);
+    } catch(error){
+      next(error);
     }
   }  
 }
