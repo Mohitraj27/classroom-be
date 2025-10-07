@@ -119,4 +119,8 @@ export class QuizRepository implements QuizContentRepositoryType {
     const [existing] = await db.select().from(learnerAssignment).where(and(eq(learnerAssignment.quizId, quizId), eq(learnerAssignment.learnerId, learnerId)));
     return existing ? true : false;
   }
+  async checkDuplicateAssigmentContent(contentId: number, learnerId: number) {
+    const [existing] = await db.select().from(learnerAssignment).where(and(eq(learnerAssignment.contentId, contentId), eq(learnerAssignment.learnerId, learnerId)));
+    return existing ? true : false;
+  }
 }

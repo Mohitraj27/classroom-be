@@ -110,6 +110,10 @@ export class LearningContentService implements LearningContentServiceType {
   async assignContentToLearners(data: { contentId: number; learnerIds: number[]; assignedBy: number }) {
     await Promise.all(data.learnerIds.map(async (learnerId) => {
        await this.quizRepo.validateLearner(learnerId);
+       const alreadyAssigned = await this.quizRepo.checkDuplicateAssigmentContent(data.contentId, learnerId);
+       if (alreadyAssigned) {
+         throw new Error(`Content ${data.contentId} is already assigned to learner ${learnerId}.`);
+       }
     }));
     const values = data.learnerIds.map((learnerId) => ({
       type: AssignContentTypeEnum.CONTENT,
