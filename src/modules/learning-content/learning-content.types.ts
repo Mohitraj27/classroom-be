@@ -55,4 +55,6 @@ export interface QuizContentRepositoryType {
     getAllQuizzes(): Promise<any>;
     assignContent(values: any[]): Promise<any>;
     assignQuiz(values: any[]): Promise<any>;
+    validateLearner(learnerId: number): Promise<any>;
+    checkDuplicateAssignment(quizId: number, learnerId: number): Promise<any>;
 }

@@ -1,6 +1,6 @@
 import { db } from "@/config/db";
 import { content, learnerAssignment, quiz, quizQuestion } from "./learning-content.model";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { LearningContentRepositoryType,QuizContentRepositoryType } from "./learning-content.types";
 import { user } from "@/modules/user/user.model";
 import { UserRole } from "@/modules/user/user.types";
@@ -114,5 +114,9 @@ export class QuizRepository implements QuizContentRepositoryType {
     }
   
     return foundLearner;
+  }
+  async checkDuplicateAssignment(quizId: number, learnerId: number) {
+    const [existing] = await db.select().from(learnerAssignment).where(and(eq(learnerAssignment.quizId, quizId), eq(learnerAssignment.learnerId, learnerId)));
+    return existing ? true : false;
   }
 }
