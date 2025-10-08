@@ -54,24 +54,42 @@ export const createQuizDto = z.object({
       questionText: z.string().min(1, "Question text is required"),
       options: z.array(z.string()).min(2, "At least two options required"),
       correctAnswer: z.string().min(1, "Correct answer required"),
-      marks: z.number().min(1).default(1),
+      marks: z.number({ required_error: "Marks are required for each question",}).min(1, "Marks must be greater than 0"),
     })
   ).nonempty("Quiz must have at least one question")
+}).superRefine((data) => {
+    const totalQuestionMarks = data.questions.reduce((sum,q)=>sum+q.marks,0);
+    data.questions.forEach((q, index) => {
+      if (q.marks <= 0) {
+        throw new Error(`Question ${index + 1} must have marks greater than 0`);
+      }
+    });
+    if (totalQuestionMarks !== data.totalMarks) {
+      throw new Error(`Total marks (${data.totalMarks}) must equal the sum of question marks (${totalQuestionMarks})`);
+    }
 });
 
-export const updateQuizDto = z.object({
-  title: z.string().optional(),
-  totalMarks: z.number().optional(),
-  questions: z.array(
-    z.object({
-      id: z.number().optional(), // for updating existing question
-      questionText: z.string(),
-      options: z.array(z.string()),
-      correctAnswer: z.string(),
-      marks: z.number(),
-    })
-  ).optional()
-});
+export const updateQuizDto = z.object({ title: z.string().optional(),
+    totalMarks: z.number().optional(),
+    questions: z.array(z.object({
+          id: z.number().optional(),
+          questionText: z.string().min(1, "Question text is required"),
+          options: z.array(z.string()).min(2, "At least two options required"),
+          correctAnswer: z.string().min(1, "Correct answer required"),
+          marks: z.number().min(1, "Marks must be greater than 0"),
+        })
+      ).optional(),
+  }).superRefine((data, ctx) => {
+    if (data.questions && data.totalMarks !== undefined) {
+      const totalQuestionMarks = data.questions.reduce((sum, q) => sum + q.marks, 0);
+      if (data.questions && data.questions.some((q) => q.marks <= 0)) {
+        throw new Error("Each question must have marks greater than 0.");
+      }
+      if (totalQuestionMarks !== data.totalMarks) {
+        throw new Error(`Total marks (${data.totalMarks}) must equal the sum of question marks (${totalQuestionMarks}).`);
+      }
+    }
+  });
 
 export const assignContentDto = z.object({
   contentId: z.number().min(1, "Content ID is required"),
