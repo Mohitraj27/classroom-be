@@ -1,0 +1,12 @@
+DROP TABLE `contentProgress`;--> statement-breakpoint
+ALTER TABLE `content` ADD CONSTRAINT `content_createdBy_users_id_fk` FOREIGN KEY (`createdBy`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `learnerAssignment` ADD CONSTRAINT `learnerAssignment_contentId_content_id_fk` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `learnerAssignment` ADD CONSTRAINT `learnerAssignment_quizId_quizzes_id_fk` FOREIGN KEY (`quizId`) REFERENCES `quizzes`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `learnerAssignment` ADD CONSTRAINT `learnerAssignment_learnerId_users_id_fk` FOREIGN KEY (`learnerId`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `learnerAssignment` ADD CONSTRAINT `learnerAssignment_assignedBy_users_id_fk` FOREIGN KEY (`assignedBy`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `quizzes` ADD CONSTRAINT `quizzes_createdBy_users_id_fk` FOREIGN KEY (`createdBy`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `quizAnswers` ADD CONSTRAINT `quizAnswers_submissionId_quizSubmissions_id_fk` FOREIGN KEY (`submissionId`) REFERENCES `quizSubmissions`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `quizAnswers` ADD CONSTRAINT `quizAnswers_questionId_quizQuestions_id_fk` FOREIGN KEY (`questionId`) REFERENCES `quizQuestions`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `quizQuestions` ADD CONSTRAINT `quizQuestions_quizId_quizzes_id_fk` FOREIGN KEY (`quizId`) REFERENCES `quizzes`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `quizSubmissions` ADD CONSTRAINT `quizSubmissions_quizId_quizzes_id_fk` FOREIGN KEY (`quizId`) REFERENCES `quizzes`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE `quizSubmissions` ADD CONSTRAINT `quizSubmissions_learnerId_users_id_fk` FOREIGN KEY (`learnerId`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;
