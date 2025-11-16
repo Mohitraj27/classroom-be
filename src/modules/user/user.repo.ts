@@ -4,101 +4,140 @@ import { and, eq, isNotNull } from "drizzle-orm";
 import { resetTokenType, signupUserInput,resetPasswordInput,UserRole,signupRequestStatus, rejectionSignupRequestInput,answerQuizInput } from "./user.types";
 import {learnerAssignment,quizSubmission,quizAnswer } from '@/modules/learning-content/learning-content.model';
 export class UserRepository {
-  async getAll(page:number,limit:number) {
-    return db.select().from(user).limit(limit).offset((page-1)*limit);
+  async getAll(page: number, limit: number, trx = db) {
+    return trx.select().from(user).limit(limit).offset((page - 1) * limit);
   }
 
-  async getById(id: number) {
-    return db.select().from(user).where(eq(user.id, id));
+  async getById(id: number, trx = db) {
+    return trx.select().from(user).where(eq(user.id, id));
   }
 
-  async createuser(userData: signupUserInput) {
-    return db.insert(signupRequest).values(userData);
-  }
-  
-  async getByEmail(email: string) {
-    return db.select().from(user).where(eq(user.email, email));
-  }
-  async delete(id: number) {
-    return db.delete(user).where(eq(user.id, id));
-  }
-  async setresetToken(id: number, resetToken: resetTokenType) {
-    return db.update(user).set( { resetToken: resetToken.resetToken, updatedAt: new Date() }).where(eq(user.id, id));
-  }
-  async updatePassword(id: number, hashedPassword: string) {
-    return db.update(user).set({ password: hashedPassword, resetToken: null, updatedAt: new Date() }).where(eq(user.id, id));
-  }
-  async checkforResetToken(resetTokenData: resetPasswordInput) {
-    return db.select({ id: user.id, email: user.email,resetToken: user.resetToken}).from(user).where(eq(user.resetToken, resetTokenData.resetToken));
+  async createSignupRequest(payload: signupUserInput, trx = db) {
+    return trx.insert(signupRequest).values(payload);
   }
 
-  async getUserName(userName: string) {
-    return db.select().from(user).where(eq(user.userName, userName));
+  async getByEmail(email: string, trx = db) {
+    return trx.select().from(user).where(eq(user.email, email));
   }
-  async showLearners(page:number,limit:number) {
-    return db.select().from(user).where(eq(user.role, UserRole.LEARNER)).limit(limit).offset((page-1)*limit);
+
+  async deleteUser(id: number, trx = db) {
+    return trx.delete(user).where(eq(user.id, id));
   }
-  async showTutors(page:number,limit:number) {
-    return db.select().from(user).where(eq(user.role, UserRole.TUTOR)).limit(limit).offset((page-1)*limit);
+
+  async setResetToken(id: number, resetToken: resetTokenType, trx = db) {
+    return trx.update(user)
+      .set({ resetToken: resetToken.resetToken, updatedAt: new Date() })
+      .where(eq(user.id, id));
   }
-  async showRequests(page:number,limit:number) {
-    return db.select().from(signupRequest).limit(limit).offset((page-1)*limit);
+
+  async updatePassword(id: number, hashedPassword: string, trx = db) {
+    return trx.update(user)
+      .set({ password: hashedPassword, resetToken: null, updatedAt: new Date() })
+      .where(eq(user.id, id));
   }
-  async getSignupRequestById(id: number) {
-    return db.select().from(signupRequest).where(eq(signupRequest.id, id));
+
+  async checkForResetToken(payload: resetPasswordInput, trx = db) {
+    return trx
+      .select({ id: user.id, email: user.email, resetToken: user.resetToken })
+      .from(user)
+      .where(eq(user.resetToken, payload.resetToken));
   }
-  async rejectRequest(rejectsignupData: rejectionSignupRequestInput) {
-    return db.update(signupRequest).set({ status: signupRequestStatus.REJECTED, rejectionReason:rejectsignupData.rejectionReason, updatedAt: new Date() }).where(eq(signupRequest.id, rejectsignupData.id));
+
+  async getUserName(userName: string, trx = db) {
+    return trx.select().from(user).where(eq(user.userName, userName));
   }
-  async insertUser(signupData: signupUserInput) {
-    return db.insert(user).values(signupData);
+
+  async showLearners(page: number, limit: number, trx = db) {
+    return trx.select().from(user).where(eq(user.role, UserRole.LEARNER)).limit(limit).offset((page - 1) * limit);
   }
-  async approveRequest(signupData: signupUserInput) {
-    return db.insert(signupRequest).values(signupData);
+  async showTutors(page: number, limit: number, trx = db) {
+    return trx.select().from(user).where(eq(user.role, UserRole.TUTOR)).limit(limit).offset((page - 1) * limit);
   }
-  async deleteSignupRequest(id:number){
-    return db.delete(signupRequest).where(eq(signupRequest.id, id));
+
+  async showRequests(page: number, limit: number, trx = db) {
+    return trx.select().from(signupRequest).limit(limit).offset((page - 1) * limit);
   }
-  async moveToHistory(data: any) {
-    return db.insert(historySignupRequest).values(data);
+
+  async getSignupRequestById(id: number, trx = db) {
+    return trx.select().from(signupRequest).where(eq(signupRequest.id, id));
   }
-  async updateProfile(id:number, userData: Partial<signupUserInput>) {
-    return db.update(user).set({ ...userData, updatedAt: new Date() }).where(eq(user.id, id));
+
+  async rejectSignupRequest(rejectsignupData: rejectionSignupRequestInput, trx = db) {
+    return trx.update(signupRequest).set({
+      status: signupRequestStatus.REJECTED,
+      rejectionReason: rejectsignupData.rejectionReason,
+      updatedAt: new Date()
+    }).where(eq(signupRequest.id, rejectsignupData.id));
   }
-  async exportUserToCSV() {
-    return db.select().from(user);
+
+  async insertUser(userPayload: signupUserInput, trx = db) {
+    return trx.insert(user).values(userPayload);
   }
-  async getAllAssignedQuizzes(userId: number) {
-    return db.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId),isNotNull(learnerAssignment.quizId)));
+
+  async insertSignupRequest(signupData: signupUserInput, trx = db) {
+    return trx.insert(signupRequest).values(signupData);
   }
+
+  async deleteSignupRequest(id: number, trx = db) {
+    return trx.delete(signupRequest).where(eq(signupRequest.id, id));
+  }
+
+  async moveToHistory(data: any, trx = db) {
+    return trx.insert(historySignupRequest).values(data);
+  }
+
+  async updateProfile(id: number, userData: Partial<signupUserInput>, trx = db) {
+    return trx.update(user).set({ ...userData, updatedAt: new Date() }).where(eq(user.id, id));
+  }
+
+  async exportUserToCSV(trx = db) {
+    return trx.select().from(user);
+  }
+
+  async getAllAssignedQuizzes(userId: number, trx = db) {
+    return trx.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId), isNotNull(learnerAssignment.quizId)));
+  }
+
+  async getAllAssignedContents(userId: number, trx = db) {
+    return trx.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId), isNotNull(learnerAssignment.contentId)));
+  }
+
+  async getAssignedQuiz(userId: number, quizId: number, trx = db) {
+    return trx.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId), eq(learnerAssignment.quizId, quizId)));
+  }
+
+  async getAssignedContent(userId: number, contentId: number, trx = db) {
+    return trx.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId), eq(learnerAssignment.contentId, contentId)));
+  }
+
   
-  async getAllAssignedContents(userId: number) {
-    return db.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId),isNotNull(learnerAssignment.contentId)));
-  }
-  
-  async getAssignedQuiz(userId: number, quizId: number) {
-    return db.select().from(learnerAssignment).where(and(eq(learnerAssignment.learnerId, userId),eq(learnerAssignment.quizId, quizId)));
-  }
-  
-  async getAssignedContent(userId: number, contentId: number) {
-    return db.select().from(learnerAssignment).where(and( eq(learnerAssignment.learnerId, userId), eq(learnerAssignment.contentId, contentId)));
-  }
-  async answerQuiz(answerQuizInput: answerQuizInput) {
-    const [submission] = await db.insert(quizSubmission).values({quizId: answerQuizInput.quizId,learnerId: answerQuizInput.learnerId,}).$returningId();
-    await db.insert(quizAnswer).values({
+  async answerQuiz(input: answerQuizInput, trx = db) {
+    const [submission] = await trx.insert(quizSubmission).values({
+      quizId: input.quizId,
+      learnerId: input.learnerId,
+      submittedAt: new Date()
+    }).$returningId();
+
+    const answerRows = (input.answers || []).map((a: any) => ({
       submissionId: submission.id,
-      questionId: answerQuizInput.questionId,
-      selectedAnswer: answerQuizInput.selectedAnswer,
-      isCorrect: answerQuizInput.isCorrect ?? false,
-      marksObtained: answerQuizInput.marksObtained ?? 0,
-   });
-    return { message: 'Quiz Answered successfully' };
+      questionId: a.questionId,
+      selectedAnswer: a.selectedAnswer,
+      isCorrect: a.isCorrect ?? false,
+      marksObtained: a.marksObtained ?? 0
+    }));
+
+    if (answerRows.length) {
+      await trx.insert(quizAnswer).values(answerRows);
+    }
+
+    return { message: "Quiz answered successfully", submissionId: submission.id };
   }
-  async isQuizAssignedToLearner(quizId: number, learnerId: number) {
-    return await db.select().from(learnerAssignment).where(and(eq(learnerAssignment.quizId, quizId), eq(learnerAssignment.learnerId, learnerId)));
+
+  async isQuizAssignedToLearner(quizId: number, learnerId: number, trx = db) {
+    return trx.select().from(learnerAssignment).where(and(eq(learnerAssignment.quizId, quizId), eq(learnerAssignment.learnerId, learnerId)));
   }
-  
-  async hasAlreadySubmittedQuiz(quizId: number, learnerId: number) {
-    return await db.select().from(quizSubmission).where(and(eq(quizSubmission.quizId, quizId), eq(quizSubmission.learnerId, learnerId)));
-   }
+
+  async hasAlreadySubmittedQuiz(quizId: number, learnerId: number, trx = db) {
+    return trx.select().from(quizSubmission).where(and(eq(quizSubmission.quizId, quizId), eq(quizSubmission.learnerId, learnerId)));
+  }
 }
