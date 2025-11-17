@@ -5,13 +5,14 @@ import { uploadFileToS3 } from "@/utils/aws_helper";
 import { CustomError } from "@/utils/custom_error";
 import statusCodes from "@/constants/status_codes";
 import {AssignContentTypeEnum} from "./learning-content.types";
+import { useTransaction } from "@/utils/dbTranscation";
 export class LearningContentService implements LearningContentServiceType {
   constructor(
     private readonly learningContentRepo = new LearningContentRepository(),
     private readonly quizRepo = new QuizRepository()) {}
 
   async createContent(input: CreateContentInput, file: Express.Multer.File, userId: number) {
-    try {
+    return useTransaction(async (trx: any) => {
       if (!file) {
         throw new CustomError("File is required", statusCodes.BAD_REQUEST);
       }
@@ -21,125 +22,133 @@ export class LearningContentService implements LearningContentServiceType {
         contentUrl: s3Url,
         createdBy: userId,
       };
-      const result = await this.learningContentRepo.create(contentData);
-      return { statusCode: statusCodes.CREATED, message: 'Content created successfully', s3Url};
-    } catch (error) {
-      throw error;
-    }
+      const result = await this.learningContentRepo.create(contentData, trx);
+      return { statusCode: statusCodes.CREATED, message: 'Content created successfully', s3Url };
+    });
   }
 
   async getContentById(id: number) {
-    try {
-      const content = await this.learningContentRepo.findById(id);
+    return useTransaction(async (trx: any) => {
+      const content = await this.learningContentRepo.findById(id, trx);
       if (!content) {
         throw new CustomError("Content not found", statusCodes.NOT_FOUND);
       }
       return content;
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
   async updateContent(id: number, input: UpdateContentInput) {
-    try {
-      // Check if content exists
-      const existingContent = await this.learningContentRepo.findById(id);
+    return useTransaction(async (trx: any) => {
+      const existingContent = await this.learningContentRepo.findById(id, trx);
       if (!existingContent) {
         throw new CustomError("Content not found", statusCodes.NOT_FOUND);
       }
-
-      const result = await this.learningContentRepo.update(id, input);
+      const result = await this.learningContentRepo.update(id, input, trx);
       return result;
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
   async deleteContent(id: number) {
-    try {
-      // Check if content exists
-      const existingContent = await this.learningContentRepo.findById(id);
+    return useTransaction(async (trx: any) => {
+      const existingContent = await this.learningContentRepo.findById(id, trx);
       if (!existingContent) {
         throw new CustomError("Content not found", statusCodes.NOT_FOUND);
       }
-      const result = await this.learningContentRepo.delete(id);
+      const result = await this.learningContentRepo.delete(id, trx);
       return result;
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
-  
   async getContentByCreatedBy(userId: number) {
-    try {
-      const contents = await this.learningContentRepo.findByCreatedBy(userId);
+    return useTransaction(async (trx: any) => {
+      const contents = await this.learningContentRepo.findByCreatedBy(userId, trx);
       return contents;
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
   async createQuiz(data: any) {
-    const data1 =  this.quizRepo.createQuiz(
-      {
-        moduleId: data.moduleId,
-        title: data.title,
-        totalMarks: data.totalMarks,
-        createdBy: data.createdBy,
-      },
-      data.questions
-    );
-    return data1;
+    return useTransaction(async (trx: any) => {
+      const result = await this.quizRepo.createQuiz(
+        {
+          title: data.title,
+          totalMarks: data.totalMarks,
+          createdBy: data.createdBy,
+        },
+        data.questions,
+        trx
+      );
+      return result;
+    });
   }
 
   async getQuizById(id: number) {
-    return this.quizRepo.getQuizById(id);
+    return useTransaction(async (trx: any) => {
+      return this.quizRepo.getQuizById(id, trx);
+    });
   }
 
   async updateQuiz(id: number, data: any) {
-    return this.quizRepo.updateQuiz(id, data, data.questions);
+    return useTransaction(async (trx: any) => {
+      return this.quizRepo.updateQuiz(id, data, data.questions, trx);
+    });
   }
 
   async deleteQuiz(id: number) {
-    return this.quizRepo.deleteQuiz(id);
+    return useTransaction(async (trx: any) => {
+      return this.quizRepo.deleteQuiz(id, trx);
+    });
   }
 
   async getAllQuizzes() {
-    return this.quizRepo.getAllQuizzes();
+    return useTransaction(async (trx: any) => {
+      return this.quizRepo.getAllQuizzes(trx);
+    });
   }
   async assignContentToLearners(data: { contentId: number; learnerIds: number[]; assignedBy: number }) {
-    await Promise.all(data.learnerIds.map(async (learnerId) => {
-       await this.quizRepo.validateLearner(learnerId);
-       const alreadyAssigned = await this.quizRepo.checkDuplicateAssigmentContent(data.contentId, learnerId);
-       if (alreadyAssigned) {
-         throw new Error(`Content ${data.contentId} is already assigned to learner ${learnerId}.`);
-       }
-    }));
-    const values = data.learnerIds.map((learnerId) => ({
-      type: AssignContentTypeEnum.CONTENT,
-      contentId: data.contentId,
-      learnerId: learnerId,
-      assignedBy: data.assignedBy,
-    }));
+    return useTransaction(async (trx: any) => {
+      // Validate all learners first
+      await Promise.all(
+        data.learnerIds.map(async (learnerId) => {
+          await this.quizRepo.validateLearner(learnerId, trx);
+          const alreadyAssigned = await this.quizRepo.checkDuplicateAssigmentContent(data.contentId, learnerId, trx);
+          if (alreadyAssigned) {
+            throw new Error(`Content ${data.contentId} is already assigned to learner ${learnerId}.`);
+          }
+        })
+      );
 
-    return this.quizRepo.assignContent(values);
+      const values = data.learnerIds.map((learnerId) => ({
+        type: AssignContentTypeEnum.CONTENT,
+        contentId: data.contentId,
+        learnerId: learnerId,
+        assignedBy: data.assignedBy,
+      }));
+
+      return this.quizRepo.assignContent(values, trx);
+    });
   }
 
   async assignQuizToLearners(data: { quizId: number; learnerIds: number[]; assignedBy: number }) {
-    await Promise.all(data.learnerIds.map(async (learnerId) => {
-      await this.quizRepo.validateLearner(learnerId);
-      const alreadyAssigned = await this.quizRepo.checkDuplicateAssignment(data.quizId, learnerId);
-      if (alreadyAssigned) {
-        throw new Error(`Quiz ${data.quizId} is already assigned to learner ${learnerId}.`);
-      }
-    }));
-    const values = data.learnerIds.map((learnerId) => ({
-      type: AssignContentTypeEnum.QUIZ,
-      quizId: data.quizId,
-      learnerId: learnerId,
-      assignedBy: data.assignedBy,
-    }));
+    return useTransaction(async (trx: any) => {
+      // Validate all learners first
+      await Promise.all(
+        data.learnerIds.map(async (learnerId) => {
+          await this.quizRepo.validateLearner(learnerId, trx);
+          const alreadyAssigned = await this.quizRepo.checkDuplicateAssignment(data.quizId, learnerId, trx);
+          if (alreadyAssigned) {
+            throw new Error(`Quiz ${data.quizId} is already assigned to learner ${learnerId}.`);
+          }
+        })
+      );
 
-    return this.quizRepo.assignQuiz(values); 
+      const values = data.learnerIds.map((learnerId) => ({
+        type: AssignContentTypeEnum.QUIZ,
+        quizId: data.quizId,
+        learnerId: learnerId,
+        assignedBy: data.assignedBy,
+      }));
+
+      return this.quizRepo.assignQuiz(values, trx);
+    });
   }
 }

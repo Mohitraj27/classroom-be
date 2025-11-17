@@ -1,0 +1,1 @@
+ALTER TABLE `signupRequest` ADD `password` varchar(60) NOT NULL;

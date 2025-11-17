@@ -1,4 +1,3 @@
-
 import { Request, Response, NextFunction } from "express";
 import { AssignContentTypeEnum } from "../learning-content/learning-content.types";
 
@@ -110,7 +109,36 @@ export interface UserControllerType {
   getAllAssignedQuizorContent(req:Request,res:Response,next:NextFunction):Promise<any>;
   answerQuiz(req:Request,res:Response,next:NextFunction):Promise<any>;
 }
-export interface CustomErrorType  {
+export interface UserRepositoryType {
+  getAll(page: number, limit: number, trx: any): Promise<any>;
+  getById(id: number, trx: any): Promise<any>;
+  createSignupRequest(payload: signupUserInput, trx: any): Promise<any>;
+  getByEmail(email: string, trx: any): Promise<any>;
+  deleteUser(id: number, trx: any): Promise<any>;
+  setResetToken(id: number, resetToken: resetTokenType, trx: any): Promise<any>;
+  updatePassword(id: number, hashedPassword: string, trx: any): Promise<any>;
+  checkForResetToken(payload: resetPasswordInput, trx: any): Promise<any>;
+  getUserName(userName: string, trx: any): Promise<any>;
+  showLearners(page: number, limit: number, trx: any): Promise<any>;
+  showTutors(page: number, limit: number, trx: any): Promise<any>;
+  showRequests(page: number, limit: number, trx: any): Promise<any>;
+  getSignupRequestById(id: number, trx: any): Promise<any>;
+  rejectSignupRequest(rejectsignupData: rejectionSignupRequestInput, trx: any): Promise<any>;
+  insertUser(userPayload: signupUserInput, trx: any): Promise<any>;
+  insertSignupRequest(signupData: signupUserInput, trx: any): Promise<any>;
+  deleteSignupRequest(id: number, trx: any): Promise<any>;
+  moveToHistory(data: any, trx: any): Promise<any>;
+  updateProfile(id: number, userData: Partial<signupUserInput>, trx: any): Promise<any>;
+  exportUserToCSV(trx: any): Promise<any>;
+  getAllAssignedQuizzes(userId: number, trx: any): Promise<any>;
+  getAllAssignedContents(userId: number, trx: any): Promise<any>;
+  getAssignedQuiz(userId: number, quizId: number, trx: any): Promise<any>;
+  getAssignedContent(userId: number, contentId: number, trx: any): Promise<any>;
+  answerQuiz(input: answerQuizInput, trx: any): Promise<any>;
+  isQuizAssignedToLearner(quizId: number, learnerId: number, trx: any): Promise<any>;
+  hasAlreadySubmittedQuiz(quizId: number, learnerId: number, trx: any): Promise<any>;
+}
+export interface CustomErrorType {
   message: string;
   name?: string;
   stack?: string; 

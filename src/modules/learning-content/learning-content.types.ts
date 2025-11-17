@@ -41,21 +41,22 @@ export interface LearningContentControllerType {
 }
 
 export interface LearningContentRepositoryType{
-    create(contentData: any): Promise<any>;
-    findById(id: number): Promise<any>;
-    update(id: number, input: UpdateContentInput): Promise<any>;
-    delete(id: number): Promise<any>;
+    create(contentData: any, trx: any): Promise<any>;
+    findById(id: number, trx: any): Promise<any>;
+    update(id: number, input: UpdateContentInput, trx: any): Promise<any>;
+    delete(id: number, trx: any): Promise<any>;
+    findByCreatedBy(createdBy: number, trx: any): Promise<any>;
 }
 
 export interface QuizContentRepositoryType {
-    createQuiz(quizData: any, questions: any[]): Promise<any>;
-    getQuizById(id: number): Promise<any>;
-    updateQuiz(id: number, data: any, questions?: any[]): Promise<any>;
-    deleteQuiz(id: number): Promise<any>;
-    getAllQuizzes(): Promise<any>;
-    assignContent(values: any[]): Promise<any>;
-    assignQuiz(values: any[]): Promise<any>;
-    validateLearner(learnerId: number): Promise<any>;
-    checkDuplicateAssignment(quizId: number, learnerId: number): Promise<any>;
-    checkDuplicateAssigmentContent(contentId: number, learnerId: number): Promise<any>;
+    createQuiz(quizData: any, questions: any[], trx: any): Promise<any>;
+    getQuizById(id: number, trx: any): Promise<any>;
+    updateQuiz(id: number, data: any, questions: any[] | undefined, trx: any): Promise<any>;
+    deleteQuiz(id: number, trx: any): Promise<any>;
+    getAllQuizzes(trx: any): Promise<any>;
+    assignContent(values: any[], trx: any): Promise<any>;
+    assignQuiz(values: any[], trx: any): Promise<any>;
+    validateLearner(learnerId: number, trx: any): Promise<any>;
+    checkDuplicateAssignment(quizId: number, learnerId: number, trx: any): Promise<any>;
+    checkDuplicateAssigmentContent(contentId: number, learnerId: number, trx: any): Promise<any>;
 }

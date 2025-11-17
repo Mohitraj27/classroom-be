@@ -177,7 +177,7 @@ export class UserService implements UserServiceType {
 
       const userToInsert = {
         ...rest,
-        password,
+        password: password,
         role: payload.role,
         createdAt: approvedUser.createdAt || new Date(),
         updatedAt: new Date()

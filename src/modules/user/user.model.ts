@@ -24,6 +24,7 @@ export const signupRequest = mysqlTable("signupRequest", {
   firstName: varchar("firstName", { length: 40 }).notNull(),
   lastName: varchar("lastName", { length: 80 }),
   email: varchar("email", { length: 320 }).notNull().unique(),
+  password: varchar("password", { length: 60 }).notNull(),
   userName: varchar('userName', { length: 32 }).notNull().unique(),
   contact_number: varchar('contact_number', { length: 10 }).notNull(),
   country: varchar('country', { length: 90 }).notNull(),
