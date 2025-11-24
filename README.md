@@ -111,6 +111,20 @@ This is a Node.js, TypeScript, Drizzle ORM, and MySQL based Learning Management 
 * `DELETE /delete-learning-path/:id`: Delete a learning path
 
 
+## New Features 
+The following new features  been added to the LMS design:
+
+- Attendance and activity tracking  
+- Live classes / virtual classroom integration  
+- Gamification (badges, leaderboards, rewards)  
+- Automated progress and performance analytics  
+- Discussion forums and social learning  
+- Certification and credentialing  
+- Multilingual and accessibility support  
+- Integrated assignment and submission workflows  
+- Notifications and reminders (Push/Email/SMS)  
+- Role-based permissions and audit logging
+
 
 ## Migration Configuration
 
